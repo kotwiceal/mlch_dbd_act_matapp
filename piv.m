@@ -4,20 +4,20 @@ classdef piv < matlab.apps.AppBase
 
     properties (Access = public)
         % define UI properties
-        MainGridLayout       matlab.ui.container.GridLayout
-        ActionPanel          matlab.ui.container.Panel
-        ActionGridLayout     matlab.ui.container.GridLayout
-        RestartButton        matlab.ui.control.StateButton
-        OutputPanel          matlab.ui.container.Panel
-        OutputGridLayout     matlab.ui.container.GridLayout
-        OutputUITable        matlab.ui.control.Table
-        ParameterPanel       matlab.ui.container.Panel
-        ParameterGridLayout  matlab.ui.container.GridLayout
-        ParameterUITable     matlab.ui.control.Table
-        DisplayFigurePanel         matlab.ui.container.Panel
-        DisplayTablePanel         matlab.ui.container.Panel
-        DisplayTableGridLayout    matlab.ui.container.GridLayout
-        DisplayUITable       matlab.ui.control.Table
+        MainGridLayout          matlab.ui.container.GridLayout
+        ActionPanel             matlab.ui.container.Panel
+        ActionGridLayout        matlab.ui.container.GridLayout
+        RestartButton           matlab.ui.control.StateButton
+        OutputPanel             matlab.ui.container.Panel
+        OutputGridLayout        matlab.ui.container.GridLayout
+        OutputUITable           matlab.ui.control.Table
+        ParameterPanel          matlab.ui.container.Panel
+        ParameterGridLayout     matlab.ui.container.GridLayout
+        ParameterUITable        matlab.ui.control.Table
+        DisplayFigurePanel      matlab.ui.container.Panel
+        DisplayTablePanel       matlab.ui.container.Panel
+        DisplayTableGridLayout  matlab.ui.container.GridLayout
+        DisplayUITable          matlab.ui.control.Table
         
         % define specific properties
         parent_ui % to put there all UI objects of present class
@@ -488,7 +488,9 @@ classdef piv < matlab.apps.AppBase
 
         end
 
-        % Define a functnio handler at cell editing of parameter table 
+        %% Define callbacks
+
+        % Define a functnion handler at cell editing of parameter table 
         function ParamaterCellEditCallback(obj, event)
             index = event.Indices(1);
             label = string(obj.ParameterUITable.Data.labels(index));
