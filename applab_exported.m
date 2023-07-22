@@ -7,12 +7,14 @@ classdef applab_exported < matlab.apps.AppBase
         LogTextArea  matlab.ui.control.TextArea
         TabGroup     matlab.ui.container.TabGroup
         PIVTab       matlab.ui.container.Tab
+        DBDTab       matlab.ui.container.Tab
     end
 
     
     properties (Access = private)
         module = struct() % to store imported modules;
         queue_pool = struct('log', parallel.pool.DataQueue, 'disp', parallel.pool.DataQueue) % to store queue pool
+        pool % to store allocated pool
     end
     
     methods (Access = private)
@@ -23,6 +25,18 @@ classdef applab_exported < matlab.apps.AppBase
             app.LogTextArea.Value = [app.LogTextArea.Value; strcat(string(datetime), " ", message)];
             scroll(app.LogTextArea, 'bottom');
         end
+
+        function init_workers(app)
+            % allocate pool
+            app.poolobj = gcp('nocreate');
+            if isempty(app.poolobj)
+                app.pool = parpool(3);
+            end
+
+            % initialize functions to workers
+            afterEach(app.queue_pool.log, @app.log)
+            afterEach(app.queue_pool.disp, @disp)
+        end
     end
     
 
@@ -32,12 +46,13 @@ classdef applab_exported < matlab.apps.AppBase
         % Code that executes after component creation
         function startupFcn(app)
             clc
-            % initialize functions to workers
-            afterEach(app.queue_pool.log, @app.log)
-            afterEach(app.queue_pool.disp, @disp)
+            % initialize workers
+            app.init_workers();
             
             % create piv interface section
             app.module.piv = piv(app.PIVTab, app.queue_pool);
+            % create dbd interface section
+            app.module.dbd = dbd(app.DBDTab, app.queue_pool);
         end
 
         % Close request function: UIFigure
@@ -62,7 +77,6 @@ classdef applab_exported < matlab.apps.AppBase
             app.UIFigure.Position = [100 100 1191 699];
             app.UIFigure.Name = 'MATLAB App';
             app.UIFigure.CloseRequestFcn = createCallbackFcn(app, @UIFigureCloseRequest, true);
-            app.UIFigure.WindowStyle = 'alwaysontop';
 
             % Create GridLayout
             app.GridLayout = uigridlayout(app.UIFigure);
@@ -80,6 +94,10 @@ classdef applab_exported < matlab.apps.AppBase
             % Create PIVTab
             app.PIVTab = uitab(app.TabGroup);
             app.PIVTab.Title = 'PIV';
+
+            % Create DBDTab
+            app.DBDTab = uitab(app.TabGroup);
+            app.DBDTab.Title = 'DBD';
 
             % Create LogTextArea
             app.LogTextArea = uitextarea(app.GridLayout);
