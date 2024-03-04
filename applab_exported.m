@@ -2,115 +2,116 @@ classdef applab_exported < matlab.apps.AppBase
 
     % Properties that correspond to app components
     properties (Access = public)
-        UIFigure                  matlab.ui.Figure
-        GridLayout6               matlab.ui.container.GridLayout
-        TabGroup                  matlab.ui.container.TabGroup
-        PIVTab                    matlab.ui.container.Tab
-        GridLayout12              matlab.ui.container.GridLayout
-        PIVActionsPanel           matlab.ui.container.Panel
-        GridLayout15              matlab.ui.container.GridLayout
-        PIVSaveButton             matlab.ui.control.StateButton
-        PIVLoadButton             matlab.ui.control.StateButton
-        PIVRestartButton          matlab.ui.control.StateButton
-        PIVOutputsPanel           matlab.ui.container.Panel
-        GridLayout14              matlab.ui.container.GridLayout
-        PIVOutputsUITable         matlab.ui.control.Table
-        PIVParametersPanel        matlab.ui.container.Panel
-        GridLayout13              matlab.ui.container.GridLayout
-        PIVParametersUITable      matlab.ui.control.Table
-        PIVPreviewPanel           matlab.ui.container.Panel
-        GridLayout3               matlab.ui.container.GridLayout
-        PIVPreviewUITable         matlab.ui.control.Table
-        DBDTab                    matlab.ui.container.Tab
-        GridLayout7               matlab.ui.container.GridLayout
-        DBDFrequencySliderPanel   matlab.ui.container.Panel
-        GridLayout17              matlab.ui.container.GridLayout
-        FrequencySlider           matlab.ui.control.Slider
-        DBDVoltageSliderPanel     matlab.ui.container.Panel
-        GridLayout16              matlab.ui.container.GridLayout
-        VoltageSlider             matlab.ui.control.Slider
-        DBDTree                   matlab.ui.container.CheckBoxTree
-        MonitorPanel              matlab.ui.container.Panel
-        ManualPanel               matlab.ui.container.Panel
-        GridLayout8               matlab.ui.container.GridLayout
-        DBDParametersTable        matlab.ui.control.Table
-        DBDActionsPanel           matlab.ui.container.Panel
-        GridLayout11              matlab.ui.container.GridLayout
-        StopButton                matlab.ui.control.StateButton
-        RequestButton             matlab.ui.control.StateButton
-        SendButton                matlab.ui.control.StateButton
-        OPTTab                    matlab.ui.container.Tab
-        GridLayout5               matlab.ui.container.GridLayout
-        OPTTree                   matlab.ui.container.CheckBoxTree
-        OPTActionsPanel           matlab.ui.container.Panel
-        GridLayout4               matlab.ui.container.GridLayout
-        OPTCancelButton           matlab.ui.control.StateButton
-        OPTLoadButton             matlab.ui.control.StateButton
-        OPTStartButton            matlab.ui.control.StateButton
-        OPTSaveButton             matlab.ui.control.StateButton
-        OPTSettingsPanel          matlab.ui.container.Panel
-        GridLayout                matlab.ui.container.GridLayout
-        OPTSettingsUITable        matlab.ui.control.Table
-        OPTResultsPanel           matlab.ui.container.Panel
-        GridLayout2               matlab.ui.container.GridLayout
-        OPTResultsUITable         matlab.ui.control.Table
-        OPTPreviewPanel           matlab.ui.container.Panel
-        MESTab                    matlab.ui.container.Tab
-        GridLayout18              matlab.ui.container.GridLayout
-        MESScanPanel              matlab.ui.container.Panel
-        GridLayout21              matlab.ui.container.GridLayout
-        MESScanUITable            matlab.ui.control.Table
-        MESActionsPanel           matlab.ui.container.Panel
-        GridLayout20              matlab.ui.container.GridLayout
-        MESLoadButton             matlab.ui.control.StateButton
-        MESSaveButton             matlab.ui.control.StateButton
-        MESStopButton             matlab.ui.control.StateButton
-        MESStartButton            matlab.ui.control.StateButton
-        MESSettingsPanel          matlab.ui.container.Panel
-        GridLayout19              matlab.ui.container.GridLayout
-        MESSettingsUITable        matlab.ui.control.Table
-        SMTab                     matlab.ui.container.Tab
-        GridLayout22              matlab.ui.container.GridLayout
-        SeedingPanel              matlab.ui.container.Panel
-        GridLayout24              matlab.ui.container.GridLayout
-        ChannelDropDown           matlab.ui.control.DropDown
-        ChannelDropDownLabel      matlab.ui.control.Label
-        USBDropDown               matlab.ui.control.DropDown
-        USBDropDownLabel          matlab.ui.control.Label
-        InitializeButton          matlab.ui.control.Button
-        SwitchGateButton          matlab.ui.control.StateButton
-        GridLayout23              matlab.ui.container.GridLayout
-        StatusButton              matlab.ui.control.StateButton
-        SMHomeButton              matlab.ui.control.StateButton
-        SMZeroButton              matlab.ui.control.StateButton
-        SMShiftButton             matlab.ui.control.StateButton
-        SMStopButton              matlab.ui.control.StateButton
-        SMMoveButton              matlab.ui.control.StateButton
-        SMLOCUITable              matlab.ui.control.Table
-        LogTextArea               matlab.ui.control.TextArea
-        MESScanContextMenu        matlab.ui.container.ContextMenu
-        AddMenu                   matlab.ui.container.Menu
-        ClearMenu                 matlab.ui.container.Menu
-        DeleteMenu                matlab.ui.container.Menu
-        CopyMenu                  matlab.ui.container.Menu
-        PasteMenu                 matlab.ui.container.Menu
-        OPTResultsContextMenu     matlab.ui.container.ContextMenu
-        OPTResultsCopyMenu        matlab.ui.container.Menu
-        ContextMenu               matlab.ui.container.ContextMenu
-        DefaultMenu               matlab.ui.container.Menu
-        ChangeviewMenu            matlab.ui.container.Menu
-        OPTParametersContextMenu  matlab.ui.container.ContextMenu
-        PasteMenu_2               matlab.ui.container.Menu
-        DBDParamContextMenu       matlab.ui.container.ContextMenu
-        DBDParamPasteMenu         matlab.ui.container.Menu
+        UIFigure                      matlab.ui.Figure
+        GridLayoutApp                 matlab.ui.container.GridLayout
+        TabGroup                      matlab.ui.container.TabGroup
+        PIVTab                        matlab.ui.container.Tab
+        GridLayoutPIV                 matlab.ui.container.GridLayout
+        PIVActionsPanel               matlab.ui.container.Panel
+        GridLayoutPIVActionPanel      matlab.ui.container.GridLayout
+        PIVSaveButton                 matlab.ui.control.StateButton
+        PIVLoadButton                 matlab.ui.control.StateButton
+        PIVRestartButton              matlab.ui.control.StateButton
+        PIVOutputsPanel               matlab.ui.container.Panel
+        GridLayoutPIVOutputsPanel     matlab.ui.container.GridLayout
+        PIVOutputsUITable             matlab.ui.control.Table
+        PIVParametersPanel            matlab.ui.container.Panel
+        GridLayoutPIVParametersPanel  matlab.ui.container.GridLayout
+        PIVParametersUITable          matlab.ui.control.Table
+        PIVPreviewPanel               matlab.ui.container.Panel
+        GridLayoutPIVPreviewPanel     matlab.ui.container.GridLayout
+        PIVPreviewUITable             matlab.ui.control.Table
+        DBDTab                        matlab.ui.container.Tab
+        GridLayoutDBD                 matlab.ui.container.GridLayout
+        DBDFrequencySliderPanel       matlab.ui.container.Panel
+        GridLayoutDBDFrequencySliderPanel  matlab.ui.container.GridLayout
+        FrequencySlider               matlab.ui.control.Slider
+        DBDVoltageSliderPanel         matlab.ui.container.Panel
+        GridLayoutDBDVoltageSliderPanel  matlab.ui.container.GridLayout
+        VoltageSlider                 matlab.ui.control.Slider
+        DBDTree                       matlab.ui.container.CheckBoxTree
+        MonitorPanel                  matlab.ui.container.Panel
+        ManualPanel                   matlab.ui.container.Panel
+        GridLayoutDBDManualPanel      matlab.ui.container.GridLayout
+        DBDParametersTable            matlab.ui.control.Table
+        DBDActionsPanel               matlab.ui.container.Panel
+        GridLayoutDBDActionsPanel     matlab.ui.container.GridLayout
+        StopButton                    matlab.ui.control.StateButton
+        RequestButton                 matlab.ui.control.StateButton
+        SendButton                    matlab.ui.control.StateButton
+        OPTTab                        matlab.ui.container.Tab
+        GridLayoutOPT                 matlab.ui.container.GridLayout
+        OPTTree                       matlab.ui.container.CheckBoxTree
+        OPTActionsPanel               matlab.ui.container.Panel
+        GridLayoutOPTActionsPanel     matlab.ui.container.GridLayout
+        OPTCancelButton               matlab.ui.control.StateButton
+        OPTLoadButton                 matlab.ui.control.StateButton
+        OPTStartButton                matlab.ui.control.StateButton
+        OPTSaveButton                 matlab.ui.control.StateButton
+        OPTSettingsPanel              matlab.ui.container.Panel
+        GridLayoutOPTSettingsPanel    matlab.ui.container.GridLayout
+        OPTSettingsUITable            matlab.ui.control.Table
+        OPTResultsPanel               matlab.ui.container.Panel
+        GridLayoutOPTResultsPanel     matlab.ui.container.GridLayout
+        OPTResultsUITable             matlab.ui.control.Table
+        OPTPreviewPanel               matlab.ui.container.Panel
+        MESTab                        matlab.ui.container.Tab
+        GridLayoutMES                 matlab.ui.container.GridLayout
+        MESScanPanel                  matlab.ui.container.Panel
+        GridLayoutMESScanPanel        matlab.ui.container.GridLayout
+        MESScanUITable                matlab.ui.control.Table
+        MESActionsPanel               matlab.ui.container.Panel
+        GridLayoutMESActionsPanel     matlab.ui.container.GridLayout
+        MESLoadButton                 matlab.ui.control.StateButton
+        MESSaveButton                 matlab.ui.control.StateButton
+        MESStopButton                 matlab.ui.control.StateButton
+        MESStartButton                matlab.ui.control.StateButton
+        MESSettingsPanel              matlab.ui.container.Panel
+        GridLayoutMESSettingsPanel    matlab.ui.container.GridLayout
+        MESSettingsUITable            matlab.ui.control.Table
+        SMTab                         matlab.ui.container.Tab
+        GridLayoutSM                  matlab.ui.container.GridLayout
+        SeedingPanel                  matlab.ui.container.Panel
+        GridLayoutSMSeedingPanel      matlab.ui.container.GridLayout
+        ChannelDropDown               matlab.ui.control.DropDown
+        ChannelDropDownLabel          matlab.ui.control.Label
+        USBDropDown                   matlab.ui.control.DropDown
+        USBDropDownLabel              matlab.ui.control.Label
+        InitializeButton              matlab.ui.control.Button
+        SwitchGateButton              matlab.ui.control.StateButton
+        GridLayoutSMD                 matlab.ui.container.GridLayout
+        StatusButton                  matlab.ui.control.StateButton
+        SMHomeButton                  matlab.ui.control.StateButton
+        SMZeroButton                  matlab.ui.control.StateButton
+        SMShiftButton                 matlab.ui.control.StateButton
+        SMStopButton                  matlab.ui.control.StateButton
+        SMMoveButton                  matlab.ui.control.StateButton
+        SMLOCUITable                  matlab.ui.control.Table
+        LogTextArea                   matlab.ui.control.TextArea
+        MESScanContextMenu            matlab.ui.container.ContextMenu
+        AddMenu                       matlab.ui.container.Menu
+        ClearMenu                     matlab.ui.container.Menu
+        DeleteMenu                    matlab.ui.container.Menu
+        CopyMenu                      matlab.ui.container.Menu
+        PasteMenu                     matlab.ui.container.Menu
+        OPTResultsContextMenu         matlab.ui.container.ContextMenu
+        OPTResultsCopyMenu            matlab.ui.container.Menu
+        ContextMenu                   matlab.ui.container.ContextMenu
+        DefaultMenu                   matlab.ui.container.Menu
+        ChangeviewMenu                matlab.ui.container.Menu
+        OPTParametersContextMenu      matlab.ui.container.ContextMenu
+        PasteMenuOPT                  matlab.ui.container.Menu
+        DBDParamContextMenu           matlab.ui.container.ContextMenu
+        DBDParamPasteMenu             matlab.ui.container.Menu
     end
 
     
     properties (Access = private)
         %% APP
-        server_piv;
-        server_mes;
+        % server instances
+        server_piv; server_mes;
 
+        % queue data pool instances
         queueEventPoolLabel = {'disp', 'logger', 'pivAccumulate', 'pivPreview', 'pivProcessed', 'pivDisplay', 'pivResetCounter', ...
             'optPreview', 'optComplete', 'optTerminate', 'mcuHttpPost', 'mesComplete', 'mesPreview', 'mesStore', 'mesTerminate', ...
             'mesTerminate', 'mesMcuUdpPost'}
@@ -120,27 +121,42 @@ classdef applab_exported < matlab.apps.AppBase
         queuePollableClientPool = struct();
         queuePollableWorkerPool = struct();
 
-        poolobj = [];
-        poolfun_opt = [];
-        poolfun_mes = [];
+        % background worker instances
+        poolobj = []; poolfun_opt = []; poolfun_mes = [];
 
+        % to store a row copy 
         buffer_row = []
         %% PIV
-        piv_tab_param = struct(port = 6060, statistic = 5, fill = categorical({'nearest'}, {'none'; 'linear'; 'nearest'}), ...
-            timefilt = false, timefiltker = 7, ...
-            spatfilt = categorical({'median'}, {'none'; 'gaussian'; 'average'; 'median'; 'wiener'}), ...
-            spatfiltker = [3, 3], motionfilt = false, motionfiltker = 40, motionfiltdeg = 35, ...
-            shift = true, shiftker = [1, 1, 50], ...
-            subtrend = categorical({'moving'}, {'none'; 'moving'; 'mean'; 'poly1'}), ...
-            subtrendker = 30, scale = 3.037, tukeywin = 0.4, norm = 2, ...
-            display = categorical({'process'}, {'surf'; 'table'; 'process'}), clim = [1, 5]);
+        piv_tab_param = struct(port = 6060, ... % port of TCP server transmitter
+            statistic = 5, ... % volume of statistics accumulation
+            fill = categorical({'nearest'}, {'none'; 'linear'; 'nearest'}), ... % apply the fill misssing method to data
+            timefilt = false, ... % time filter based on data statistics
+            timefiltker = 7, ... % count of time RMS to pass data at time filtering
+            spatfilt = categorical({'median'}, {'none'; 'gaussian'; 'average'; 'median'; 'wiener'}), ... % spatial filter method, applied to time averaged data
+            spatfiltker = [3, 3], ... % kernel of spatial filter
+            motionfilt = false, ... % spatial motion filter
+            motionfiltker = 40, ... % kernel of motion filter
+            motionfiltdeg = 35, ... % angle of motion filter kernel
+            shift = true, ... % shift transveral data index
+            shiftker = [1, 1, 50], ... %  parameter at transveral data index shifting: [left top index, right top index, width]
+            subtrend = categorical({'moving'}, {'none'; 'moving'; 'mean'; 'poly1'}), ... % trend substraction method: high-pass fitler
+            subtrendker = 30, .... % kernel of 1D moving filter
+            tukeywin = 0.4, ... % tukey window function parameter
+            norm = 2, ... % norm order of transersal profile
+            display = categorical({'process'}, {'surf'; 'table'; 'process'}), ... % to show workflow
+            clim = [1, 5]); % colorbar limit
 
         piv_tab_param_def;
         piv_var = struct();
         %% DBD       
-        dbd_tab_param = struct(address = '192.168.1.1', port_http = 8090, port_udp = 8080, voltage_value = 2*ones(1, 16), voltage_index = 0:15, ...
-            frequency_value = [76,70,69,73,67,68,60,64,64,63,65,63,67,66,69,68], frequency_index = 0:15, ...
-            mode = categorical({'frequency'}, {'all'; 'voltage'; 'frequency'}));
+        dbd_tab_param = struct(address = '192.168.1.1', ... % MCU address
+            port_http = 8090, ... % MCU HTTP port
+            port_udp = 8080, ... % MCU UDP port
+            voltage_value = 2*ones(1, 16), ... % voltage vector
+            voltage_index = 0:15, ... % voltage channel index
+            frequency_value = [76,70,69,73,67,68,60,64,64,63,65,63,67,66,69,68], ... % frequency vector
+            frequency_index = 0:15, ... % frequency channel index
+            mode = categorical({'frequency'}, {'all'; 'voltage'; 'frequency'})); % data transmitting mode
         dbd_tab_param_cell_select = [];
         dbd_tab_param_def;
 
@@ -150,11 +166,18 @@ classdef applab_exported < matlab.apps.AppBase
         mcu_http_post = []
         mcu_udp_post = []
         %% OPT
-        opt_tab_param = struct(index = 0:15, x0 = 2*ones(1,16), xmin = 1.3*ones(1,16), xmax = 3.4*ones(1,16), ...
-            FiniteDifferenceType = categorical({'forward'}, {'forward'; 'central'}), ...
-            FunctionTolerance = 1, HonorBounds = true, DiffMinChange = 0.2, StepTolerance = 0.1, ...
-            method = categorical({'interior-point'}, {'interior-point'; 'active-set'; 'sqp'}), norm = 2, ...
-            loop = categorical({'close'}, {'close'}));
+        opt_tab_param = struct(index = 0:15, ... % voltage channel using at optimization
+            x0 = 2*ones(1,16), ... % initial approximation
+            xmin = 1.3*ones(1,16), ... % upper boundary
+            xmax = 3.4*ones(1,16), ... % lower boundary
+            FiniteDifferenceType = categorical({'forward'}, {'forward'; 'central'}), ... % see https://www.mathworks.com/help/optim/ug/optimization-options-reference.html
+            FunctionTolerance = 1, ...
+            HonorBounds = true, ... 
+            DiffMinChange = 0.2, ...
+            StepTolerance = 0.1, ...
+            method = categorical({'interior-point'}, {'interior-point'; 'active-set'; 'sqp'}), ...
+            norm = 2, ... % norm order of objective function
+            loop = categorical({'close'}, {'close'})); % type of optimization
         opt_tab_param_def;
         opt_tab_param_cell_select = [];
         opt_tab_res = [];
@@ -172,8 +195,11 @@ classdef applab_exported < matlab.apps.AppBase
         mes_tab_scan_row_index = [];
         mes_buffer_row = [];
 
-        mes_tab_param = struct(port = 5050, index = [0, 1, 2, 3], voltage = [0, 1.8, 2.2, 2.6], mode = categorical({'generator'}, {'generator'; 'manual'}), ...
-            store = categorical({'davis'}, {'davis'; 'matlab'}));
+        mes_tab_param = struct(port = 5050, ... % port of TCP server transmitter
+            index = [0, 1, 2, 3], ... % voltage channel index
+            voltage = [0, 1.8, 2.2, 2.6], ... % voltage vector
+            mode = categorical({'generator'}, {'generator'; 'manual'}), ... % build voltage grid method
+            store = categorical({'davis'}, {'davis'; 'matlab'})); % measurement method: `davis` - PIV data stored in DaVis, `matlab` - in application memory 
         mes_tab_param_def;
         mes_tab_scan = [];
         mes_tab_matlab_input = [];
@@ -335,13 +361,13 @@ classdef applab_exported < matlab.apps.AppBase
                 switch char(app.piv_tab_param.display)
                     case 'surf'
                         app.PIVPreviewUITable.Visible = 'off';
-                        app.GridLayout3.Visible = 'off';
+                        app.GridLayoutPIVPreviewPanel.Visible = 'off';
                         tile = tiledlayout(app.PIVPreviewPanel, 'flow');
                         ax = nexttile(tile); imagesc(ax, packet.data(:,:,end)); axis(ax, 'image');
                         colorbar(ax); colormap(ax, 'turbo'); clim(ax, app.piv_tab_param.clim);
                     case 'table'
                         app.PIVPreviewUITable.Visible = 'on';
-                        app.GridLayout3.Visible = 'on';
+                        app.GridLayoutPIVPreviewPanel.Visible = 'on';
                         app.PIVPreviewUITable.Data = packet.data(:,:,end);
                 end
             catch
@@ -357,7 +383,7 @@ classdef applab_exported < matlab.apps.AppBase
                         tileglobal = tiledlayout(app.PIVPreviewPanel, 'flow'); 
                         copyobj(tile, tileglobal)
                         app.PIVPreviewUITable.Visible = 'off';
-                        app.GridLayout3.Visible = 'off';
+                        app.GridLayoutPIVPreviewPanel.Visible = 'off';
                     catch
                         app.log('PIV: showing of process PIV reuslt is failed');
                     end
@@ -687,9 +713,6 @@ classdef applab_exported < matlab.apps.AppBase
                 app.OPTResultsUITable.Data = app.opt_tab_res;
                 scroll(app.OPTResultsUITable, 'bottom');
                 addStyle(app.OPTResultsUITable, uistyle('BackgroundColor', '#77AC30'), 'row', size(app.OPTResultsUITable.Data, 1));
-
-                app.opt_data_closeloop.input = cat(2, app.opt_data_closeloop.input, data.vector(:));
-                app.opt_data_closeloop.value = cat(1, app.opt_data_closeloop.value, data.value);
             catch 
                 app.log('OPT: optimization comple event failed');
             end
@@ -1537,8 +1560,8 @@ classdef applab_exported < matlab.apps.AppBase
             end
         end
 
-        % Menu selected function: PasteMenu_2
-        function PasteMenu_2Selected(app, event)
+        % Menu selected function: PasteMenuOPT
+        function PasteMenuOPTSelected(app, event)
             % there is error
             label = app.OPTSettingsUITable.Data.labels(app.opt_tab_param_cell_select); label = label{1};
             switch label
@@ -1598,21 +1621,21 @@ classdef applab_exported < matlab.apps.AppBase
             app.UIFigure.Name = 'MATLAB App';
             app.UIFigure.CloseRequestFcn = createCallbackFcn(app, @UIFigureCloseRequest, true);
 
-            % Create GridLayout6
-            app.GridLayout6 = uigridlayout(app.UIFigure);
-            app.GridLayout6.ColumnWidth = {'1x'};
-            app.GridLayout6.RowHeight = {'8x', '1x'};
-            app.GridLayout6.RowSpacing = 0;
-            app.GridLayout6.Padding = [0 0 0 0];
+            % Create GridLayoutApp
+            app.GridLayoutApp = uigridlayout(app.UIFigure);
+            app.GridLayoutApp.ColumnWidth = {'1x'};
+            app.GridLayoutApp.RowHeight = {'8x', '1x'};
+            app.GridLayoutApp.RowSpacing = 0;
+            app.GridLayoutApp.Padding = [0 0 0 0];
 
             % Create LogTextArea
-            app.LogTextArea = uitextarea(app.GridLayout6);
+            app.LogTextArea = uitextarea(app.GridLayoutApp);
             app.LogTextArea.Editable = 'off';
             app.LogTextArea.Layout.Row = 2;
             app.LogTextArea.Layout.Column = 1;
 
             % Create TabGroup
-            app.TabGroup = uitabgroup(app.GridLayout6);
+            app.TabGroup = uitabgroup(app.GridLayoutApp);
             app.TabGroup.Layout.Row = 1;
             app.TabGroup.Layout.Column = 1;
 
@@ -1620,25 +1643,25 @@ classdef applab_exported < matlab.apps.AppBase
             app.PIVTab = uitab(app.TabGroup);
             app.PIVTab.Title = 'PIV';
 
-            % Create GridLayout12
-            app.GridLayout12 = uigridlayout(app.PIVTab);
-            app.GridLayout12.ColumnWidth = {'0.5x', '1x'};
-            app.GridLayout12.RowHeight = {'1x', '0.5x', '0.3x'};
+            % Create GridLayoutPIV
+            app.GridLayoutPIV = uigridlayout(app.PIVTab);
+            app.GridLayoutPIV.ColumnWidth = {'0.5x', '1x'};
+            app.GridLayoutPIV.RowHeight = {'1x', '0.5x', '0.3x'};
 
             % Create PIVPreviewPanel
-            app.PIVPreviewPanel = uipanel(app.GridLayout12);
+            app.PIVPreviewPanel = uipanel(app.GridLayoutPIV);
             app.PIVPreviewPanel.Title = 'Preview';
             app.PIVPreviewPanel.BackgroundColor = [0.9412 0.9412 0.9412];
             app.PIVPreviewPanel.Layout.Row = [1 3];
             app.PIVPreviewPanel.Layout.Column = 2;
 
-            % Create GridLayout3
-            app.GridLayout3 = uigridlayout(app.PIVPreviewPanel);
-            app.GridLayout3.ColumnWidth = {'1x'};
-            app.GridLayout3.RowHeight = {'1x'};
+            % Create GridLayoutPIVPreviewPanel
+            app.GridLayoutPIVPreviewPanel = uigridlayout(app.PIVPreviewPanel);
+            app.GridLayoutPIVPreviewPanel.ColumnWidth = {'1x'};
+            app.GridLayoutPIVPreviewPanel.RowHeight = {'1x'};
 
             % Create PIVPreviewUITable
-            app.PIVPreviewUITable = uitable(app.GridLayout3);
+            app.PIVPreviewUITable = uitable(app.GridLayoutPIVPreviewPanel);
             app.PIVPreviewUITable.ColumnName = '';
             app.PIVPreviewUITable.RowStriping = 'off';
             app.PIVPreviewUITable.Multiselect = 'off';
@@ -1647,18 +1670,18 @@ classdef applab_exported < matlab.apps.AppBase
             app.PIVPreviewUITable.Layout.Column = 1;
 
             % Create PIVParametersPanel
-            app.PIVParametersPanel = uipanel(app.GridLayout12);
+            app.PIVParametersPanel = uipanel(app.GridLayoutPIV);
             app.PIVParametersPanel.Title = 'Parameters';
             app.PIVParametersPanel.Layout.Row = 1;
             app.PIVParametersPanel.Layout.Column = 1;
 
-            % Create GridLayout13
-            app.GridLayout13 = uigridlayout(app.PIVParametersPanel);
-            app.GridLayout13.ColumnWidth = {'1x'};
-            app.GridLayout13.RowHeight = {'1x'};
+            % Create GridLayoutPIVParametersPanel
+            app.GridLayoutPIVParametersPanel = uigridlayout(app.PIVParametersPanel);
+            app.GridLayoutPIVParametersPanel.ColumnWidth = {'1x'};
+            app.GridLayoutPIVParametersPanel.RowHeight = {'1x'};
 
             % Create PIVParametersUITable
-            app.PIVParametersUITable = uitable(app.GridLayout13);
+            app.PIVParametersUITable = uitable(app.GridLayoutPIVParametersPanel);
             app.PIVParametersUITable.ColumnName = '';
             app.PIVParametersUITable.RowName = {};
             app.PIVParametersUITable.CellEditCallback = createCallbackFcn(app, @PIVParametersUITableCellEdit, true);
@@ -1666,50 +1689,50 @@ classdef applab_exported < matlab.apps.AppBase
             app.PIVParametersUITable.Layout.Column = 1;
 
             % Create PIVOutputsPanel
-            app.PIVOutputsPanel = uipanel(app.GridLayout12);
+            app.PIVOutputsPanel = uipanel(app.GridLayoutPIV);
             app.PIVOutputsPanel.Title = 'Outputs';
             app.PIVOutputsPanel.Layout.Row = 2;
             app.PIVOutputsPanel.Layout.Column = 1;
 
-            % Create GridLayout14
-            app.GridLayout14 = uigridlayout(app.PIVOutputsPanel);
-            app.GridLayout14.ColumnWidth = {'1x'};
-            app.GridLayout14.RowHeight = {'1x'};
+            % Create GridLayoutPIVOutputsPanel
+            app.GridLayoutPIVOutputsPanel = uigridlayout(app.PIVOutputsPanel);
+            app.GridLayoutPIVOutputsPanel.ColumnWidth = {'1x'};
+            app.GridLayoutPIVOutputsPanel.RowHeight = {'1x'};
 
             % Create PIVOutputsUITable
-            app.PIVOutputsUITable = uitable(app.GridLayout14);
+            app.PIVOutputsUITable = uitable(app.GridLayoutPIVOutputsPanel);
             app.PIVOutputsUITable.ColumnName = '';
             app.PIVOutputsUITable.RowName = {};
             app.PIVOutputsUITable.Layout.Row = 1;
             app.PIVOutputsUITable.Layout.Column = 1;
 
             % Create PIVActionsPanel
-            app.PIVActionsPanel = uipanel(app.GridLayout12);
+            app.PIVActionsPanel = uipanel(app.GridLayoutPIV);
             app.PIVActionsPanel.Title = 'Actions';
             app.PIVActionsPanel.Layout.Row = 3;
             app.PIVActionsPanel.Layout.Column = 1;
 
-            % Create GridLayout15
-            app.GridLayout15 = uigridlayout(app.PIVActionsPanel);
-            app.GridLayout15.ColumnWidth = {'1x', '1x', '1x'};
-            app.GridLayout15.RowHeight = {'1x'};
+            % Create GridLayoutPIVActionPanel
+            app.GridLayoutPIVActionPanel = uigridlayout(app.PIVActionsPanel);
+            app.GridLayoutPIVActionPanel.ColumnWidth = {'1x', '1x', '1x'};
+            app.GridLayoutPIVActionPanel.RowHeight = {'1x'};
 
             % Create PIVRestartButton
-            app.PIVRestartButton = uibutton(app.GridLayout15, 'state');
+            app.PIVRestartButton = uibutton(app.GridLayoutPIVActionPanel, 'state');
             app.PIVRestartButton.ValueChangedFcn = createCallbackFcn(app, @PIVRestartButtonValueChanged, true);
             app.PIVRestartButton.Text = 'Restart';
             app.PIVRestartButton.Layout.Row = 1;
             app.PIVRestartButton.Layout.Column = 3;
 
             % Create PIVLoadButton
-            app.PIVLoadButton = uibutton(app.GridLayout15, 'state');
+            app.PIVLoadButton = uibutton(app.GridLayoutPIVActionPanel, 'state');
             app.PIVLoadButton.ValueChangedFcn = createCallbackFcn(app, @PIVLoadButtonValueChanged, true);
             app.PIVLoadButton.Text = 'Load';
             app.PIVLoadButton.Layout.Row = 1;
             app.PIVLoadButton.Layout.Column = 1;
 
             % Create PIVSaveButton
-            app.PIVSaveButton = uibutton(app.GridLayout15, 'state');
+            app.PIVSaveButton = uibutton(app.GridLayoutPIVActionPanel, 'state');
             app.PIVSaveButton.ValueChangedFcn = createCallbackFcn(app, @PIVSaveButtonValueChanged, true);
             app.PIVSaveButton.Text = 'Save';
             app.PIVSaveButton.Layout.Row = 1;
@@ -1719,55 +1742,55 @@ classdef applab_exported < matlab.apps.AppBase
             app.DBDTab = uitab(app.TabGroup);
             app.DBDTab.Title = 'DBD';
 
-            % Create GridLayout7
-            app.GridLayout7 = uigridlayout(app.DBDTab);
-            app.GridLayout7.ColumnWidth = {'1x', '0.5x', '0.5x', '1x'};
+            % Create GridLayoutDBD
+            app.GridLayoutDBD = uigridlayout(app.DBDTab);
+            app.GridLayoutDBD.ColumnWidth = {'1x', '0.5x', '0.5x', '1x'};
 
             % Create ManualPanel
-            app.ManualPanel = uipanel(app.GridLayout7);
+            app.ManualPanel = uipanel(app.GridLayoutDBD);
             app.ManualPanel.Title = 'Manual';
             app.ManualPanel.Layout.Row = [1 2];
             app.ManualPanel.Layout.Column = 1;
 
-            % Create GridLayout8
-            app.GridLayout8 = uigridlayout(app.ManualPanel);
-            app.GridLayout8.ColumnWidth = {'1x'};
-            app.GridLayout8.RowHeight = {'1x', '1x', '0.35x', '0.35x'};
+            % Create GridLayoutDBDManualPanel
+            app.GridLayoutDBDManualPanel = uigridlayout(app.ManualPanel);
+            app.GridLayoutDBDManualPanel.ColumnWidth = {'1x'};
+            app.GridLayoutDBDManualPanel.RowHeight = {'1x', '1x', '0.35x', '0.35x'};
 
             % Create DBDActionsPanel
-            app.DBDActionsPanel = uipanel(app.GridLayout8);
+            app.DBDActionsPanel = uipanel(app.GridLayoutDBDManualPanel);
             app.DBDActionsPanel.Title = 'Actions';
             app.DBDActionsPanel.Layout.Row = 4;
             app.DBDActionsPanel.Layout.Column = 1;
 
-            % Create GridLayout11
-            app.GridLayout11 = uigridlayout(app.DBDActionsPanel);
-            app.GridLayout11.ColumnWidth = {'1x', '1x', '1x'};
-            app.GridLayout11.RowHeight = {'1x'};
+            % Create GridLayoutDBDActionsPanel
+            app.GridLayoutDBDActionsPanel = uigridlayout(app.DBDActionsPanel);
+            app.GridLayoutDBDActionsPanel.ColumnWidth = {'1x', '1x', '1x'};
+            app.GridLayoutDBDActionsPanel.RowHeight = {'1x'};
 
             % Create SendButton
-            app.SendButton = uibutton(app.GridLayout11, 'state');
+            app.SendButton = uibutton(app.GridLayoutDBDActionsPanel, 'state');
             app.SendButton.ValueChangedFcn = createCallbackFcn(app, @SendButtonValueChanged, true);
             app.SendButton.Text = 'Send';
             app.SendButton.Layout.Row = 1;
             app.SendButton.Layout.Column = 1;
 
             % Create RequestButton
-            app.RequestButton = uibutton(app.GridLayout11, 'state');
+            app.RequestButton = uibutton(app.GridLayoutDBDActionsPanel, 'state');
             app.RequestButton.ValueChangedFcn = createCallbackFcn(app, @RequestButtonValueChanged, true);
             app.RequestButton.Text = 'Request';
             app.RequestButton.Layout.Row = 1;
             app.RequestButton.Layout.Column = 2;
 
             % Create StopButton
-            app.StopButton = uibutton(app.GridLayout11, 'state');
+            app.StopButton = uibutton(app.GridLayoutDBDActionsPanel, 'state');
             app.StopButton.ValueChangedFcn = createCallbackFcn(app, @StopButtonValueChanged, true);
             app.StopButton.Text = 'Stop';
             app.StopButton.Layout.Row = 1;
             app.StopButton.Layout.Column = 3;
 
             % Create DBDParametersTable
-            app.DBDParametersTable = uitable(app.GridLayout8);
+            app.DBDParametersTable = uitable(app.GridLayoutDBDManualPanel);
             app.DBDParametersTable.ColumnName = '';
             app.DBDParametersTable.RowName = {};
             app.DBDParametersTable.CellEditCallback = createCallbackFcn(app, @DBDParametersTableCellEdit, true);
@@ -1776,13 +1799,13 @@ classdef applab_exported < matlab.apps.AppBase
             app.DBDParametersTable.Layout.Column = 1;
 
             % Create MonitorPanel
-            app.MonitorPanel = uipanel(app.GridLayout7);
+            app.MonitorPanel = uipanel(app.GridLayoutDBD);
             app.MonitorPanel.Title = 'Monitor';
             app.MonitorPanel.Layout.Row = [1 2];
             app.MonitorPanel.Layout.Column = 4;
 
             % Create DBDTree
-            app.DBDTree = uitree(app.GridLayout7, 'checkbox');
+            app.DBDTree = uitree(app.GridLayoutDBD, 'checkbox');
             app.DBDTree.Layout.Row = [1 2];
             app.DBDTree.Layout.Column = 2;
 
@@ -1790,18 +1813,18 @@ classdef applab_exported < matlab.apps.AppBase
             app.DBDTree.CheckedNodesChangedFcn = createCallbackFcn(app, @DBDTreeCheckedNodesChanged, true);
 
             % Create DBDVoltageSliderPanel
-            app.DBDVoltageSliderPanel = uipanel(app.GridLayout7);
+            app.DBDVoltageSliderPanel = uipanel(app.GridLayoutDBD);
             app.DBDVoltageSliderPanel.Title = 'Voltage';
             app.DBDVoltageSliderPanel.Layout.Row = 1;
             app.DBDVoltageSliderPanel.Layout.Column = 3;
 
-            % Create GridLayout16
-            app.GridLayout16 = uigridlayout(app.DBDVoltageSliderPanel);
-            app.GridLayout16.ColumnWidth = {'1x'};
-            app.GridLayout16.RowHeight = {'1x'};
+            % Create GridLayoutDBDVoltageSliderPanel
+            app.GridLayoutDBDVoltageSliderPanel = uigridlayout(app.DBDVoltageSliderPanel);
+            app.GridLayoutDBDVoltageSliderPanel.ColumnWidth = {'1x'};
+            app.GridLayoutDBDVoltageSliderPanel.RowHeight = {'1x'};
 
             % Create VoltageSlider
-            app.VoltageSlider = uislider(app.GridLayout16);
+            app.VoltageSlider = uislider(app.GridLayoutDBDVoltageSliderPanel);
             app.VoltageSlider.Limits = [0 4];
             app.VoltageSlider.Orientation = 'vertical';
             app.VoltageSlider.ValueChangedFcn = createCallbackFcn(app, @VoltageSliderValueChanged, true);
@@ -1809,18 +1832,18 @@ classdef applab_exported < matlab.apps.AppBase
             app.VoltageSlider.Layout.Column = 1;
 
             % Create DBDFrequencySliderPanel
-            app.DBDFrequencySliderPanel = uipanel(app.GridLayout7);
+            app.DBDFrequencySliderPanel = uipanel(app.GridLayoutDBD);
             app.DBDFrequencySliderPanel.Title = 'Frequency';
             app.DBDFrequencySliderPanel.Layout.Row = 2;
             app.DBDFrequencySliderPanel.Layout.Column = 3;
 
-            % Create GridLayout17
-            app.GridLayout17 = uigridlayout(app.DBDFrequencySliderPanel);
-            app.GridLayout17.ColumnWidth = {'1x'};
-            app.GridLayout17.RowHeight = {'1x'};
+            % Create GridLayoutDBDFrequencySliderPanel
+            app.GridLayoutDBDFrequencySliderPanel = uigridlayout(app.DBDFrequencySliderPanel);
+            app.GridLayoutDBDFrequencySliderPanel.ColumnWidth = {'1x'};
+            app.GridLayoutDBDFrequencySliderPanel.RowHeight = {'1x'};
 
             % Create FrequencySlider
-            app.FrequencySlider = uislider(app.GridLayout17);
+            app.FrequencySlider = uislider(app.GridLayoutDBDFrequencySliderPanel);
             app.FrequencySlider.Limits = [50 90];
             app.FrequencySlider.Orientation = 'vertical';
             app.FrequencySlider.ValueChangedFcn = createCallbackFcn(app, @FrequencySliderValueChanged, true);
@@ -1832,30 +1855,30 @@ classdef applab_exported < matlab.apps.AppBase
             app.OPTTab = uitab(app.TabGroup);
             app.OPTTab.Title = 'OPT';
 
-            % Create GridLayout5
-            app.GridLayout5 = uigridlayout(app.OPTTab);
-            app.GridLayout5.ColumnWidth = {'1x', '1x', '1x', '1x', '1x', '1x', '1x', '1x'};
-            app.GridLayout5.RowHeight = {'1x', '1x', '1x', '1x', '1x', '1x', '1x', '1x', '1x', '1x'};
+            % Create GridLayoutOPT
+            app.GridLayoutOPT = uigridlayout(app.OPTTab);
+            app.GridLayoutOPT.ColumnWidth = {'1x', '1x', '1x', '1x', '1x', '1x', '1x', '1x'};
+            app.GridLayoutOPT.RowHeight = {'1x', '1x', '1x', '1x', '1x', '1x', '1x', '1x', '1x', '1x'};
 
             % Create OPTPreviewPanel
-            app.OPTPreviewPanel = uipanel(app.GridLayout5);
+            app.OPTPreviewPanel = uipanel(app.GridLayoutOPT);
             app.OPTPreviewPanel.Title = 'Preview';
             app.OPTPreviewPanel.Layout.Row = [1 10];
             app.OPTPreviewPanel.Layout.Column = [5 8];
 
             % Create OPTResultsPanel
-            app.OPTResultsPanel = uipanel(app.GridLayout5);
+            app.OPTResultsPanel = uipanel(app.GridLayoutOPT);
             app.OPTResultsPanel.Title = 'Results';
             app.OPTResultsPanel.Layout.Row = [7 10];
             app.OPTResultsPanel.Layout.Column = [1 4];
 
-            % Create GridLayout2
-            app.GridLayout2 = uigridlayout(app.OPTResultsPanel);
-            app.GridLayout2.ColumnWidth = {'1x'};
-            app.GridLayout2.RowHeight = {'1x'};
+            % Create GridLayoutOPTResultsPanel
+            app.GridLayoutOPTResultsPanel = uigridlayout(app.OPTResultsPanel);
+            app.GridLayoutOPTResultsPanel.ColumnWidth = {'1x'};
+            app.GridLayoutOPTResultsPanel.RowHeight = {'1x'};
 
             % Create OPTResultsUITable
-            app.OPTResultsUITable = uitable(app.GridLayout2);
+            app.OPTResultsUITable = uitable(app.GridLayoutOPTResultsPanel);
             app.OPTResultsUITable.ColumnName = '';
             app.OPTResultsUITable.SelectionType = 'row';
             app.OPTResultsUITable.CellSelectionCallback = createCallbackFcn(app, @OPTResultsUITableCellSelection, true);
@@ -1864,18 +1887,18 @@ classdef applab_exported < matlab.apps.AppBase
             app.OPTResultsUITable.Layout.Column = 1;
 
             % Create OPTSettingsPanel
-            app.OPTSettingsPanel = uipanel(app.GridLayout5);
+            app.OPTSettingsPanel = uipanel(app.GridLayoutOPT);
             app.OPTSettingsPanel.Title = 'Settings';
             app.OPTSettingsPanel.Layout.Row = [1 5];
             app.OPTSettingsPanel.Layout.Column = [1 3];
 
-            % Create GridLayout
-            app.GridLayout = uigridlayout(app.OPTSettingsPanel);
-            app.GridLayout.ColumnWidth = {'1x'};
-            app.GridLayout.RowHeight = {'1x'};
+            % Create GridLayoutOPTSettingsPanel
+            app.GridLayoutOPTSettingsPanel = uigridlayout(app.OPTSettingsPanel);
+            app.GridLayoutOPTSettingsPanel.ColumnWidth = {'1x'};
+            app.GridLayoutOPTSettingsPanel.RowHeight = {'1x'};
 
             % Create OPTSettingsUITable
-            app.OPTSettingsUITable = uitable(app.GridLayout);
+            app.OPTSettingsUITable = uitable(app.GridLayoutOPTSettingsPanel);
             app.OPTSettingsUITable.ColumnName = '';
             app.OPTSettingsUITable.RowName = {};
             app.OPTSettingsUITable.CellEditCallback = createCallbackFcn(app, @OPTSettingsUITableCellEdit, true);
@@ -1884,46 +1907,46 @@ classdef applab_exported < matlab.apps.AppBase
             app.OPTSettingsUITable.Layout.Column = 1;
 
             % Create OPTActionsPanel
-            app.OPTActionsPanel = uipanel(app.GridLayout5);
+            app.OPTActionsPanel = uipanel(app.GridLayoutOPT);
             app.OPTActionsPanel.Title = 'Actions';
             app.OPTActionsPanel.Layout.Row = 6;
             app.OPTActionsPanel.Layout.Column = [1 3];
 
-            % Create GridLayout4
-            app.GridLayout4 = uigridlayout(app.OPTActionsPanel);
-            app.GridLayout4.ColumnWidth = {'1x', '1x', '1x', '1x'};
-            app.GridLayout4.RowHeight = {'1x'};
+            % Create GridLayoutOPTActionsPanel
+            app.GridLayoutOPTActionsPanel = uigridlayout(app.OPTActionsPanel);
+            app.GridLayoutOPTActionsPanel.ColumnWidth = {'1x', '1x', '1x', '1x'};
+            app.GridLayoutOPTActionsPanel.RowHeight = {'1x'};
 
             % Create OPTSaveButton
-            app.OPTSaveButton = uibutton(app.GridLayout4, 'state');
+            app.OPTSaveButton = uibutton(app.GridLayoutOPTActionsPanel, 'state');
             app.OPTSaveButton.ValueChangedFcn = createCallbackFcn(app, @OPTSaveButtonValueChanged, true);
             app.OPTSaveButton.Text = 'Save';
             app.OPTSaveButton.Layout.Row = 1;
             app.OPTSaveButton.Layout.Column = 3;
 
             % Create OPTStartButton
-            app.OPTStartButton = uibutton(app.GridLayout4, 'state');
+            app.OPTStartButton = uibutton(app.GridLayoutOPTActionsPanel, 'state');
             app.OPTStartButton.ValueChangedFcn = createCallbackFcn(app, @OPTStartButtonValueChanged, true);
             app.OPTStartButton.Text = 'Start';
             app.OPTStartButton.Layout.Row = 1;
             app.OPTStartButton.Layout.Column = 1;
 
             % Create OPTLoadButton
-            app.OPTLoadButton = uibutton(app.GridLayout4, 'state');
+            app.OPTLoadButton = uibutton(app.GridLayoutOPTActionsPanel, 'state');
             app.OPTLoadButton.ValueChangedFcn = createCallbackFcn(app, @OPTLoadButtonValueChanged, true);
             app.OPTLoadButton.Text = 'Load';
             app.OPTLoadButton.Layout.Row = 1;
             app.OPTLoadButton.Layout.Column = 4;
 
             % Create OPTCancelButton
-            app.OPTCancelButton = uibutton(app.GridLayout4, 'state');
+            app.OPTCancelButton = uibutton(app.GridLayoutOPTActionsPanel, 'state');
             app.OPTCancelButton.ValueChangedFcn = createCallbackFcn(app, @OPTCancelButtonValueChanged, true);
             app.OPTCancelButton.Text = 'Cancel';
             app.OPTCancelButton.Layout.Row = 1;
             app.OPTCancelButton.Layout.Column = 2;
 
             % Create OPTTree
-            app.OPTTree = uitree(app.GridLayout5, 'checkbox');
+            app.OPTTree = uitree(app.GridLayoutOPT, 'checkbox');
             app.OPTTree.Layout.Row = [1 6];
             app.OPTTree.Layout.Column = 4;
 
@@ -1934,23 +1957,23 @@ classdef applab_exported < matlab.apps.AppBase
             app.MESTab = uitab(app.TabGroup);
             app.MESTab.Title = 'MES';
 
-            % Create GridLayout18
-            app.GridLayout18 = uigridlayout(app.MESTab);
-            app.GridLayout18.ColumnWidth = {'0.5x', '1x'};
+            % Create GridLayoutMES
+            app.GridLayoutMES = uigridlayout(app.MESTab);
+            app.GridLayoutMES.ColumnWidth = {'0.5x', '1x'};
 
             % Create MESSettingsPanel
-            app.MESSettingsPanel = uipanel(app.GridLayout18);
+            app.MESSettingsPanel = uipanel(app.GridLayoutMES);
             app.MESSettingsPanel.Title = 'Settings';
             app.MESSettingsPanel.Layout.Row = 1;
             app.MESSettingsPanel.Layout.Column = 1;
 
-            % Create GridLayout19
-            app.GridLayout19 = uigridlayout(app.MESSettingsPanel);
-            app.GridLayout19.ColumnWidth = {'1x'};
-            app.GridLayout19.RowHeight = {'1x'};
+            % Create GridLayoutMESSettingsPanel
+            app.GridLayoutMESSettingsPanel = uigridlayout(app.MESSettingsPanel);
+            app.GridLayoutMESSettingsPanel.ColumnWidth = {'1x'};
+            app.GridLayoutMESSettingsPanel.RowHeight = {'1x'};
 
             % Create MESSettingsUITable
-            app.MESSettingsUITable = uitable(app.GridLayout19);
+            app.MESSettingsUITable = uitable(app.GridLayoutMESSettingsPanel);
             app.MESSettingsUITable.ColumnName = '';
             app.MESSettingsUITable.RowName = {};
             app.MESSettingsUITable.CellEditCallback = createCallbackFcn(app, @MESSettingsUITableCellEdit, true);
@@ -1958,57 +1981,57 @@ classdef applab_exported < matlab.apps.AppBase
             app.MESSettingsUITable.Layout.Column = 1;
 
             % Create MESActionsPanel
-            app.MESActionsPanel = uipanel(app.GridLayout18);
+            app.MESActionsPanel = uipanel(app.GridLayoutMES);
             app.MESActionsPanel.Title = 'Actions';
             app.MESActionsPanel.Layout.Row = 2;
             app.MESActionsPanel.Layout.Column = 1;
 
-            % Create GridLayout20
-            app.GridLayout20 = uigridlayout(app.MESActionsPanel);
-            app.GridLayout20.ColumnWidth = {'1x'};
-            app.GridLayout20.RowHeight = {'1x', '1x', '1x', '1x'};
+            % Create GridLayoutMESActionsPanel
+            app.GridLayoutMESActionsPanel = uigridlayout(app.MESActionsPanel);
+            app.GridLayoutMESActionsPanel.ColumnWidth = {'1x'};
+            app.GridLayoutMESActionsPanel.RowHeight = {'1x', '1x', '1x', '1x'};
 
             % Create MESStartButton
-            app.MESStartButton = uibutton(app.GridLayout20, 'state');
+            app.MESStartButton = uibutton(app.GridLayoutMESActionsPanel, 'state');
             app.MESStartButton.ValueChangedFcn = createCallbackFcn(app, @MESStartButtonValueChanged, true);
             app.MESStartButton.Text = 'Start';
             app.MESStartButton.Layout.Row = 1;
             app.MESStartButton.Layout.Column = 1;
 
             % Create MESStopButton
-            app.MESStopButton = uibutton(app.GridLayout20, 'state');
+            app.MESStopButton = uibutton(app.GridLayoutMESActionsPanel, 'state');
             app.MESStopButton.ValueChangedFcn = createCallbackFcn(app, @MESStopButtonValueChanged, true);
             app.MESStopButton.Text = 'Stop';
             app.MESStopButton.Layout.Row = 2;
             app.MESStopButton.Layout.Column = 1;
 
             % Create MESSaveButton
-            app.MESSaveButton = uibutton(app.GridLayout20, 'state');
+            app.MESSaveButton = uibutton(app.GridLayoutMESActionsPanel, 'state');
             app.MESSaveButton.ValueChangedFcn = createCallbackFcn(app, @MESSaveButtonValueChanged, true);
             app.MESSaveButton.Text = 'Save';
             app.MESSaveButton.Layout.Row = 4;
             app.MESSaveButton.Layout.Column = 1;
 
             % Create MESLoadButton
-            app.MESLoadButton = uibutton(app.GridLayout20, 'state');
+            app.MESLoadButton = uibutton(app.GridLayoutMESActionsPanel, 'state');
             app.MESLoadButton.ValueChangedFcn = createCallbackFcn(app, @MESLoadButtonValueChanged, true);
             app.MESLoadButton.Text = 'Load';
             app.MESLoadButton.Layout.Row = 3;
             app.MESLoadButton.Layout.Column = 1;
 
             % Create MESScanPanel
-            app.MESScanPanel = uipanel(app.GridLayout18);
+            app.MESScanPanel = uipanel(app.GridLayoutMES);
             app.MESScanPanel.Title = 'Panel';
             app.MESScanPanel.Layout.Row = [1 2];
             app.MESScanPanel.Layout.Column = 2;
 
-            % Create GridLayout21
-            app.GridLayout21 = uigridlayout(app.MESScanPanel);
-            app.GridLayout21.ColumnWidth = {'1x'};
-            app.GridLayout21.RowHeight = {'1x'};
+            % Create GridLayoutMESScanPanel
+            app.GridLayoutMESScanPanel = uigridlayout(app.MESScanPanel);
+            app.GridLayoutMESScanPanel.ColumnWidth = {'1x'};
+            app.GridLayoutMESScanPanel.RowHeight = {'1x'};
 
             % Create MESScanUITable
-            app.MESScanUITable = uitable(app.GridLayout21);
+            app.MESScanUITable = uitable(app.GridLayoutMESScanPanel);
             app.MESScanUITable.ColumnName = '';
             app.MESScanUITable.SelectionType = 'row';
             app.MESScanUITable.CellEditCallback = createCallbackFcn(app, @MESScanUITableCellEdit, true);
@@ -2020,18 +2043,18 @@ classdef applab_exported < matlab.apps.AppBase
             app.SMTab = uitab(app.TabGroup);
             app.SMTab.Title = 'SM';
 
-            % Create GridLayout22
-            app.GridLayout22 = uigridlayout(app.SMTab);
+            % Create GridLayoutSM
+            app.GridLayoutSM = uigridlayout(app.SMTab);
 
-            % Create GridLayout23
-            app.GridLayout23 = uigridlayout(app.GridLayout22);
-            app.GridLayout23.ColumnWidth = {'1x', '0.5x'};
-            app.GridLayout23.RowHeight = {'1x', '1x', '1x', '1x', '1x', '1x'};
-            app.GridLayout23.Layout.Row = 1;
-            app.GridLayout23.Layout.Column = 1;
+            % Create GridLayoutSMD
+            app.GridLayoutSMD = uigridlayout(app.GridLayoutSM);
+            app.GridLayoutSMD.ColumnWidth = {'1x', '0.5x'};
+            app.GridLayoutSMD.RowHeight = {'1x', '1x', '1x', '1x', '1x', '1x'};
+            app.GridLayoutSMD.Layout.Row = 1;
+            app.GridLayoutSMD.Layout.Column = 1;
 
             % Create SMLOCUITable
-            app.SMLOCUITable = uitable(app.GridLayout23);
+            app.SMLOCUITable = uitable(app.GridLayoutSMD);
             app.SMLOCUITable.ColumnName = '';
             app.SMLOCUITable.RowName = {};
             app.SMLOCUITable.CellEditCallback = createCallbackFcn(app, @SMLOCUITableCellEdit, true);
@@ -2039,93 +2062,93 @@ classdef applab_exported < matlab.apps.AppBase
             app.SMLOCUITable.Layout.Column = 1;
 
             % Create SMMoveButton
-            app.SMMoveButton = uibutton(app.GridLayout23, 'state');
+            app.SMMoveButton = uibutton(app.GridLayoutSMD, 'state');
             app.SMMoveButton.ValueChangedFcn = createCallbackFcn(app, @SMMoveButtonValueChanged, true);
             app.SMMoveButton.Text = 'Move';
             app.SMMoveButton.Layout.Row = 4;
             app.SMMoveButton.Layout.Column = 2;
 
             % Create SMStopButton
-            app.SMStopButton = uibutton(app.GridLayout23, 'state');
+            app.SMStopButton = uibutton(app.GridLayoutSMD, 'state');
             app.SMStopButton.Text = 'Stop';
             app.SMStopButton.Layout.Row = 6;
             app.SMStopButton.Layout.Column = 2;
 
             % Create SMShiftButton
-            app.SMShiftButton = uibutton(app.GridLayout23, 'state');
+            app.SMShiftButton = uibutton(app.GridLayoutSMD, 'state');
             app.SMShiftButton.Enable = 'off';
             app.SMShiftButton.Text = 'Shift';
             app.SMShiftButton.Layout.Row = 5;
             app.SMShiftButton.Layout.Column = 2;
 
             % Create SMZeroButton
-            app.SMZeroButton = uibutton(app.GridLayout23, 'state');
+            app.SMZeroButton = uibutton(app.GridLayoutSMD, 'state');
             app.SMZeroButton.Enable = 'off';
             app.SMZeroButton.Text = 'Zero';
             app.SMZeroButton.Layout.Row = 2;
             app.SMZeroButton.Layout.Column = 2;
 
             % Create SMHomeButton
-            app.SMHomeButton = uibutton(app.GridLayout23, 'state');
+            app.SMHomeButton = uibutton(app.GridLayoutSMD, 'state');
             app.SMHomeButton.ValueChangedFcn = createCallbackFcn(app, @SMHomeButtonValueChanged, true);
             app.SMHomeButton.Text = 'Home';
             app.SMHomeButton.Layout.Row = 3;
             app.SMHomeButton.Layout.Column = 2;
 
             % Create StatusButton
-            app.StatusButton = uibutton(app.GridLayout23, 'state');
+            app.StatusButton = uibutton(app.GridLayoutSMD, 'state');
             app.StatusButton.ValueChangedFcn = createCallbackFcn(app, @StatusButtonValueChanged, true);
             app.StatusButton.Text = 'Status';
             app.StatusButton.Layout.Row = 1;
             app.StatusButton.Layout.Column = 2;
 
             % Create SeedingPanel
-            app.SeedingPanel = uipanel(app.GridLayout22);
+            app.SeedingPanel = uipanel(app.GridLayoutSM);
             app.SeedingPanel.Title = 'Seeding';
             app.SeedingPanel.Layout.Row = 1;
             app.SeedingPanel.Layout.Column = 2;
 
-            % Create GridLayout24
-            app.GridLayout24 = uigridlayout(app.SeedingPanel);
-            app.GridLayout24.RowHeight = {'1x', '1x', '1x', '1x'};
+            % Create GridLayoutSMSeedingPanel
+            app.GridLayoutSMSeedingPanel = uigridlayout(app.SeedingPanel);
+            app.GridLayoutSMSeedingPanel.RowHeight = {'1x', '1x', '1x', '1x'};
 
             % Create SwitchGateButton
-            app.SwitchGateButton = uibutton(app.GridLayout24, 'state');
+            app.SwitchGateButton = uibutton(app.GridLayoutSMSeedingPanel, 'state');
             app.SwitchGateButton.ValueChangedFcn = createCallbackFcn(app, @SwitchGateButtonValueChanged, true);
             app.SwitchGateButton.Text = 'Switch Gate';
             app.SwitchGateButton.Layout.Row = 4;
             app.SwitchGateButton.Layout.Column = [1 2];
 
             % Create InitializeButton
-            app.InitializeButton = uibutton(app.GridLayout24, 'push');
+            app.InitializeButton = uibutton(app.GridLayoutSMSeedingPanel, 'push');
             app.InitializeButton.ButtonPushedFcn = createCallbackFcn(app, @InitializeButtonPushed, true);
             app.InitializeButton.Layout.Row = 3;
             app.InitializeButton.Layout.Column = [1 2];
             app.InitializeButton.Text = 'Initialize';
 
             % Create USBDropDownLabel
-            app.USBDropDownLabel = uilabel(app.GridLayout24);
+            app.USBDropDownLabel = uilabel(app.GridLayoutSMSeedingPanel);
             app.USBDropDownLabel.HorizontalAlignment = 'right';
             app.USBDropDownLabel.Layout.Row = 1;
             app.USBDropDownLabel.Layout.Column = 1;
             app.USBDropDownLabel.Text = 'USB';
 
             % Create USBDropDown
-            app.USBDropDown = uidropdown(app.GridLayout24);
+            app.USBDropDown = uidropdown(app.GridLayoutSMSeedingPanel);
             app.USBDropDown.Items = {};
             app.USBDropDown.Layout.Row = 1;
             app.USBDropDown.Layout.Column = 2;
             app.USBDropDown.Value = {};
 
             % Create ChannelDropDownLabel
-            app.ChannelDropDownLabel = uilabel(app.GridLayout24);
+            app.ChannelDropDownLabel = uilabel(app.GridLayoutSMSeedingPanel);
             app.ChannelDropDownLabel.HorizontalAlignment = 'right';
             app.ChannelDropDownLabel.Layout.Row = 2;
             app.ChannelDropDownLabel.Layout.Column = 1;
             app.ChannelDropDownLabel.Text = 'Channel';
 
             % Create ChannelDropDown
-            app.ChannelDropDown = uidropdown(app.GridLayout24);
+            app.ChannelDropDown = uidropdown(app.GridLayoutSMSeedingPanel);
             app.ChannelDropDown.Items = {};
             app.ChannelDropDown.Layout.Row = 2;
             app.ChannelDropDown.Layout.Column = 2;
@@ -2189,10 +2212,10 @@ classdef applab_exported < matlab.apps.AppBase
             % Create OPTParametersContextMenu
             app.OPTParametersContextMenu = uicontextmenu(app.UIFigure);
 
-            % Create PasteMenu_2
-            app.PasteMenu_2 = uimenu(app.OPTParametersContextMenu);
-            app.PasteMenu_2.MenuSelectedFcn = createCallbackFcn(app, @PasteMenu_2Selected, true);
-            app.PasteMenu_2.Text = 'Paste';
+            % Create PasteMenuOPT
+            app.PasteMenuOPT = uimenu(app.OPTParametersContextMenu);
+            app.PasteMenuOPT.MenuSelectedFcn = createCallbackFcn(app, @PasteMenuOPTSelected, true);
+            app.PasteMenuOPT.Text = 'Paste';
             
             % Assign app.OPTParametersContextMenu
             app.OPTSettingsUITable.ContextMenu = app.OPTParametersContextMenu;
