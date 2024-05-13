@@ -36,6 +36,7 @@ classdef applab_exported < matlab.apps.AppBase
         DBDParametersTable            matlab.ui.control.Table
         DBDActionsPanel               matlab.ui.container.Panel
         GridLayoutDBDActionsPanel     matlab.ui.container.GridLayout
+        HalfButton                    matlab.ui.control.Button
         StopButton                    matlab.ui.control.StateButton
         RequestButton                 matlab.ui.control.StateButton
         SendButton                    matlab.ui.control.StateButton
@@ -218,10 +219,10 @@ classdef applab_exported < matlab.apps.AppBase
                 switch type
                     case 'dac'
                         app.dbd_tab_param.voltage_value(index + 1) = value;
-                        app.mcu_udp_post('dac', app.dbd_tab_param.voltage_value, app.dbd_tab_param.voltage_index);
+                        app.mcu_udp_post('dac', app.dbd_tab_param.voltage_value, index + 1);
                     case 'fm'
                         app.dbd_tab_param.frequency_value(index + 1) = value;
-                        app.mcu_udp_post('fm', app.dbd_tab_param.frequency_value, app.dbd_tab_param.frequency_index);
+                        app.mcu_udp_post('fm', app.dbd_tab_param.frequency_value, index + 1);
                 end
                 app.dbd_display();
             catch
@@ -239,7 +240,7 @@ classdef applab_exported < matlab.apps.AppBase
             %% initialize pool
             app.poolobj = gcp('nocreate');
             if isempty(app.poolobj)
-                app.poolobj = parpool;
+                app.poolobj = parpool(3);
             end
 
             %% define parallel.pool.DataQueue instances
@@ -1607,6 +1608,15 @@ classdef applab_exported < matlab.apps.AppBase
             writeline(app.mcu, packet)
             app.log(strcat("SD: send packet ", packet))
         end
+
+        % Button pushed function: HalfButton
+        function HalfButtonPushed(app, event)
+            app.mcu_udp_post('dac', 0.5*ones(1, 16), 0:15);
+            app.dbd_tab_param.voltage_value = zeros(1, 16);
+            app.StopButton.Value = false;
+            app.dbd_display();
+            app.log('DBD: call the half button');
+        end
     end
 
     % Component initialization
@@ -1765,7 +1775,7 @@ classdef applab_exported < matlab.apps.AppBase
 
             % Create GridLayoutDBDActionsPanel
             app.GridLayoutDBDActionsPanel = uigridlayout(app.DBDActionsPanel);
-            app.GridLayoutDBDActionsPanel.ColumnWidth = {'1x', '1x', '1x'};
+            app.GridLayoutDBDActionsPanel.ColumnWidth = {'1x', '1x', '1x', '1x'};
             app.GridLayoutDBDActionsPanel.RowHeight = {'1x'};
 
             % Create SendButton
@@ -1788,6 +1798,13 @@ classdef applab_exported < matlab.apps.AppBase
             app.StopButton.Text = 'Stop';
             app.StopButton.Layout.Row = 1;
             app.StopButton.Layout.Column = 3;
+
+            % Create HalfButton
+            app.HalfButton = uibutton(app.GridLayoutDBDActionsPanel, 'push');
+            app.HalfButton.ButtonPushedFcn = createCallbackFcn(app, @HalfButtonPushed, true);
+            app.HalfButton.Layout.Row = 1;
+            app.HalfButton.Layout.Column = 4;
+            app.HalfButton.Text = 'Half';
 
             % Create DBDParametersTable
             app.DBDParametersTable = uitable(app.GridLayoutDBDManualPanel);
