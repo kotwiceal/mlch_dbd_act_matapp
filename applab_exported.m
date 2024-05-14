@@ -36,6 +36,7 @@ classdef applab_exported < matlab.apps.AppBase
         DBDParametersTable            matlab.ui.control.Table
         DBDActionsPanel               matlab.ui.container.Panel
         GridLayoutDBDActionsPanel     matlab.ui.container.GridLayout
+        HalfButton                    matlab.ui.control.Button
         StopButton                    matlab.ui.control.StateButton
         RequestButton                 matlab.ui.control.StateButton
         SendButton                    matlab.ui.control.StateButton
@@ -71,14 +72,7 @@ classdef applab_exported < matlab.apps.AppBase
         MESSettingsUITable            matlab.ui.control.Table
         SMTab                         matlab.ui.container.Tab
         GridLayoutSM                  matlab.ui.container.GridLayout
-        SeedingPanel                  matlab.ui.container.Panel
-        GridLayoutSMSeedingPanel      matlab.ui.container.GridLayout
-        ChannelDropDown               matlab.ui.control.DropDown
-        ChannelDropDownLabel          matlab.ui.control.Label
-        USBDropDown                   matlab.ui.control.DropDown
-        USBDropDownLabel              matlab.ui.control.Label
-        InitializeButton              matlab.ui.control.Button
-        SwitchGateButton              matlab.ui.control.StateButton
+        StepMotorsPanel               matlab.ui.container.Panel
         GridLayoutSMD                 matlab.ui.container.GridLayout
         StatusButton                  matlab.ui.control.StateButton
         SMHomeButton                  matlab.ui.control.StateButton
@@ -87,6 +81,11 @@ classdef applab_exported < matlab.apps.AppBase
         SMStopButton                  matlab.ui.control.StateButton
         SMMoveButton                  matlab.ui.control.StateButton
         SMLOCUITable                  matlab.ui.control.Table
+        SeedingPanel                  matlab.ui.container.Panel
+        GridLayoutSMSeedingPanel      matlab.ui.container.GridLayout
+        SeedingParametersUITable      matlab.ui.control.Table
+        InitializeButton              matlab.ui.control.Button
+        SwitchGateButton              matlab.ui.control.StateButton
         LogTextArea                   matlab.ui.control.TextArea
         MESScanContextMenu            matlab.ui.container.ContextMenu
         AddMenu                       matlab.ui.container.Menu
@@ -114,10 +113,10 @@ classdef applab_exported < matlab.apps.AppBase
         % queue data pool instances
         queueEventPoolLabel = {'disp', 'logger', 'pivAccumulate', 'pivPreview', 'pivProcessed', 'pivDisplay', 'pivResetCounter', ...
             'optPreview', 'optComplete', 'optTerminate', 'mcuHttpPost', 'mesComplete', 'mesPreview', 'mesStore', 'mesTerminate', ...
-            'mesTerminate', 'mesMcuUdpPost'}
+            'mesTerminate', 'mesMcuUdpPost', 'seedingWatcher', 'seedingHandle'}
         queueEventPool = struct();
 
-        queuePollablePoolLabel = {'pivProcessed', 'mcuHttpPost'}
+        queuePollablePoolLabel = {'pivProcessed', 'mcuHttpPost', 'seedingWatcher'}
         queuePollableClientPool = struct();
         queuePollableWorkerPool = struct();
 
@@ -177,7 +176,9 @@ classdef applab_exported < matlab.apps.AppBase
             StepTolerance = 0.1, ...
             method = categorical({'interior-point'}, {'interior-point'; 'active-set'; 'sqp'}), ...
             norm = 2, ... % norm order of objective function
-            loop = categorical({'close'}, {'close'})); % type of optimization
+            loop = categorical({'close'}, {'close'}), ... % type of optimization
+            seed = true); % auto flow seeding
+
         opt_tab_param_def;
         opt_tab_param_cell_select = [];
         opt_tab_res = [];
@@ -209,6 +210,14 @@ classdef applab_exported < matlab.apps.AppBase
         sm_tab_loc = struct(rowname = ["current", "move", "shift"], colname = ["camera", "laser"], data = zeros(3, 2));
         %% SD
         mcu = [];
+        sd_counter = 1;
+        sd_tab_param = struct(port = categorical({'COM8'}, serialportlist()), ...
+            channel = 4, ...
+            period = 4, ... % period in iteration to open seeding gate
+            duration = 4, ... % seeding duration in seconds
+            delay = 2); % delay after closing gate in seconds
+        sd_tab_param_def = [];
+        mcu_switch_seed_gate = [];
     end
     
     methods (Access = private)
@@ -218,10 +227,10 @@ classdef applab_exported < matlab.apps.AppBase
                 switch type
                     case 'dac'
                         app.dbd_tab_param.voltage_value(index + 1) = value;
-                        app.mcu_udp_post('dac', app.dbd_tab_param.voltage_value, app.dbd_tab_param.voltage_index);
+                        app.mcu_udp_post('dac', app.dbd_tab_param.voltage_value, index + 1);
                     case 'fm'
                         app.dbd_tab_param.frequency_value(index + 1) = value;
-                        app.mcu_udp_post('fm', app.dbd_tab_param.frequency_value, app.dbd_tab_param.frequency_index);
+                        app.mcu_udp_post('fm', app.dbd_tab_param.frequency_value, index + 1);
                 end
                 app.dbd_display();
             catch
@@ -239,7 +248,7 @@ classdef applab_exported < matlab.apps.AppBase
             %% initialize pool
             app.poolobj = gcp('nocreate');
             if isempty(app.poolobj)
-                app.poolobj = parpool;
+                app.poolobj = parpool(3);
             end
 
             %% define parallel.pool.DataQueue instances
@@ -462,7 +471,6 @@ classdef applab_exported < matlab.apps.AppBase
         function mcu_http_post_par(app, data)
             data = jsondecode(data);
             state = app.mcu_http_post('dac', data.dac.value, data.dac.index);
-            % send(app.worker_client_http, state);
             send(app.queuePollableClientPool.mcuHttpPost, state);
             if (state)
                 app.dbd_tab_param.voltage_value(data.dac.index + 1) = data.dac.value;
@@ -696,6 +704,7 @@ classdef applab_exported < matlab.apps.AppBase
                     app.OPTTree.Enable = 'on';
                     app.OPTSettingsUITable.Enable = 'on';
                     app.opt_init_tree();
+                    app.mcu_switch_seed_gate(0);
                 end
             catch
             end
@@ -703,6 +712,7 @@ classdef applab_exported < matlab.apps.AppBase
 
         function opt_complete(app, data)
             try
+                app.mcu_switch_seed_gate(0);
                 app.OPTSettingsUITable.Enable = 'on';
                 app.OPTStartButton.Value = false;
                 app.OPTStartButton.Enable = 'on';
@@ -787,8 +797,7 @@ classdef applab_exported < matlab.apps.AppBase
 
         function sm_init(app)
 
-            d = dir(fullfile(fileparts(mfilename('fullpath')), '..'));
-            folder = d(1).folder;
+            [folder, ~, ~] = fileparts(mfilename('fullpath'));
 
             addpath(genpath(fullfile(folder, 'libs', 'ximc')));
 
@@ -845,7 +854,7 @@ classdef applab_exported < matlab.apps.AppBase
 
         function sm_move_button(app)
             for i = 1:size(app.sm_device, 2)
-                app.ximc_move(app.sm_device{i}.name, app.sm_tab_loc.data(2, i));
+                ximc_move(app.sm_device{i}.name, app.sm_tab_loc.data(2, i));
             end
             app.sm_disp_curpos();
         end
@@ -863,26 +872,36 @@ classdef applab_exported < matlab.apps.AppBase
 
         %% declaration of SD functions
         function sd_init(app)
-            app.USBDropDown.Items = serialportlist();
-            app.ChannelDropDown.Items = split(num2str(4:10));
-            try
-                app.USBDropDown.Value = 'COM8';
-                app.ChannelDropDown.Value = '4';
-                app.sm_mcu_init();
-            catch 
-                app.log("SD: serialport connection error");
-            end
+            app.sd_tab_param_def = app.sd_tab_param;
+            app.init_tab_param(app.sd_tab_param, 'SeedingParametersUITable');
 
+            app.sm_mcu_init();
+
+            afterEach(app.queueEventPool.seedingWatcher, @app.sd_seeding_counter);
+            afterEach(app.queueEventPool.seedingHandle, @app.mcu_switch_seed_gate);
         end
 
         function sm_mcu_init(app)
             delete(app.mcu);
             try
-                app.mcu = serialport(app.USBDropDown.Value, 9600, "Timeout", 5);
+                app.mcu = serialport(char(app.sd_tab_param.port), 9600, "Timeout", 5);
                 configureTerminator(app.mcu, "CR")
-                app.log(strcat("SD: serialport connected to ", app.USBDropDown.Value));
+                app.mcu_switch_seed_gate = @(value) mcu_com_write(value = value, channel = app.sd_tab_param.channel, ...
+                    serial = app.mcu, command = 'chdigout', log = app.queueEventPool.logger);
+                app.log(strcat("SD: serialport connected to ",char(app.sd_tab_param.port)));
             catch
                 app.log("SD: serialport connection error");
+            end
+        end
+
+        function sd_seeding_counter(app, state)
+            if state
+                app.sd_counter = app.sd_counter + 1;
+                if app.sd_counter > app.sd_tab_param.period
+                    app.sd_counter = 1;
+                    send(app.queuePollableClientPool.seedingWatcher, ...
+                        struct(duration = app.sd_tab_param.duration, delay = app.sd_tab_param.delay, state = true));
+                end
             end
         end
     end
@@ -910,7 +929,7 @@ classdef applab_exported < matlab.apps.AppBase
             app.dbd_init();
             app.opt_init();
             app.mes_init();
-            % app.sm_init();
+            app.sm_init();
             app.sd_init();
         end
 
@@ -960,7 +979,9 @@ classdef applab_exported < matlab.apps.AppBase
             if (app.OPTStartButton.Value)
                 app.OPTStartButton.Enable ='off';
                 
-                % it is necessary to local store variables to perform their copying in function_hadles
+                app.sd_counter = 1;
+
+                % it is necessary to local store variables to perform their copying in function_handles
                 normval = app.opt_tab_param.norm;
     
                 app.log('OPT: start the optimization');
@@ -979,7 +1000,8 @@ classdef applab_exported < matlab.apps.AppBase
                 problem.index = app.opt_tab_param.index;
                 % problem.func_norm = @(x) rms(x.*exp(abs(expval*x)), 'omitnan');
                 problem.func_norm = @(x) norm(x, normval);
-    
+                problem.seeding = struct(auto = app.opt_tab_param.seed);
+
                 switch app.opt_tab_param.loop
                     case 'open'
                         if ~isempty(app.opt_data_openloop.input)
@@ -1554,7 +1576,7 @@ classdef applab_exported < matlab.apps.AppBase
             index = event.Indices(1);
             label = string(app.DBDParametersTable.Data.labels(index));
 
-            % redefine MCU methods
+            % redefine MCU method
             if iscategory(categorical({'address', 'port_udp', 'port_http'}), label)
                 app.dbd_init_mcu();
             end
@@ -1601,11 +1623,30 @@ classdef applab_exported < matlab.apps.AppBase
 
         % Value changed function: SwitchGateButton
         function SwitchGateButtonValueChanged(app, event)
-            value = app.SwitchGateButton.Value;
-            param.chdigout.value = {value}; param.chdigout.index = {app.ChannelDropDown.Value};
-            packet = jsonencode(param);
-            writeline(app.mcu, packet)
-            app.log(strcat("SD: send packet ", packet))
+            app.mcu_switch_seed_gate(event.Value);
+        end
+
+        % Button pushed function: HalfButton
+        function HalfButtonPushed(app, event)
+            app.mcu_udp_post('dac', 0.5*ones(1, 16), 0:15);
+            app.dbd_tab_param.voltage_value = zeros(1, 16);
+            app.StopButton.Value = false;
+            app.dbd_display();
+            app.log('DBD: call the half button');
+        end
+
+        % Cell edit callback: SeedingParametersUITable
+        function SeedingParametersUITableCellEdit(app, event)
+            app.update_tab_param('sd_tab_param', 'SeedingParametersUITable', event.Indices(1));
+
+            index = event.Indices(1);
+            label = string(app.SeedingParametersUITable.Data.labels(index));
+
+            % redefine MCU method
+            if iscategory(categorical({'port', 'channel'}), label)
+                app.mcu_switch_seed_gate = @(value) mcu_com_write(value = value, channel = app.sd_tab_param.channel, ...
+                    serial = app.mcu, command = 'chdigout', log = app.queueEventPool.logger);
+            end
         end
     end
 
@@ -1765,7 +1806,7 @@ classdef applab_exported < matlab.apps.AppBase
 
             % Create GridLayoutDBDActionsPanel
             app.GridLayoutDBDActionsPanel = uigridlayout(app.DBDActionsPanel);
-            app.GridLayoutDBDActionsPanel.ColumnWidth = {'1x', '1x', '1x'};
+            app.GridLayoutDBDActionsPanel.ColumnWidth = {'1x', '1x', '1x', '1x'};
             app.GridLayoutDBDActionsPanel.RowHeight = {'1x'};
 
             % Create SendButton
@@ -1788,6 +1829,13 @@ classdef applab_exported < matlab.apps.AppBase
             app.StopButton.Text = 'Stop';
             app.StopButton.Layout.Row = 1;
             app.StopButton.Layout.Column = 3;
+
+            % Create HalfButton
+            app.HalfButton = uibutton(app.GridLayoutDBDActionsPanel, 'push');
+            app.HalfButton.ButtonPushedFcn = createCallbackFcn(app, @HalfButtonPushed, true);
+            app.HalfButton.Layout.Row = 1;
+            app.HalfButton.Layout.Column = 4;
+            app.HalfButton.Text = 'Half';
 
             % Create DBDParametersTable
             app.DBDParametersTable = uitable(app.GridLayoutDBDManualPanel);
@@ -2046,12 +2094,49 @@ classdef applab_exported < matlab.apps.AppBase
             % Create GridLayoutSM
             app.GridLayoutSM = uigridlayout(app.SMTab);
 
+            % Create SeedingPanel
+            app.SeedingPanel = uipanel(app.GridLayoutSM);
+            app.SeedingPanel.Title = 'Seeding';
+            app.SeedingPanel.Layout.Row = 1;
+            app.SeedingPanel.Layout.Column = 2;
+
+            % Create GridLayoutSMSeedingPanel
+            app.GridLayoutSMSeedingPanel = uigridlayout(app.SeedingPanel);
+            app.GridLayoutSMSeedingPanel.ColumnWidth = {'1x'};
+            app.GridLayoutSMSeedingPanel.RowHeight = {'1x', '0.2x', '0.2x'};
+
+            % Create SwitchGateButton
+            app.SwitchGateButton = uibutton(app.GridLayoutSMSeedingPanel, 'state');
+            app.SwitchGateButton.ValueChangedFcn = createCallbackFcn(app, @SwitchGateButtonValueChanged, true);
+            app.SwitchGateButton.Text = 'Switch Gate';
+            app.SwitchGateButton.Layout.Row = 3;
+            app.SwitchGateButton.Layout.Column = 1;
+
+            % Create InitializeButton
+            app.InitializeButton = uibutton(app.GridLayoutSMSeedingPanel, 'push');
+            app.InitializeButton.ButtonPushedFcn = createCallbackFcn(app, @InitializeButtonPushed, true);
+            app.InitializeButton.Layout.Row = 2;
+            app.InitializeButton.Layout.Column = 1;
+            app.InitializeButton.Text = 'Initialize';
+
+            % Create SeedingParametersUITable
+            app.SeedingParametersUITable = uitable(app.GridLayoutSMSeedingPanel);
+            app.SeedingParametersUITable.ColumnName = '';
+            app.SeedingParametersUITable.RowName = {};
+            app.SeedingParametersUITable.CellEditCallback = createCallbackFcn(app, @SeedingParametersUITableCellEdit, true);
+            app.SeedingParametersUITable.Layout.Row = 1;
+            app.SeedingParametersUITable.Layout.Column = 1;
+
+            % Create StepMotorsPanel
+            app.StepMotorsPanel = uipanel(app.GridLayoutSM);
+            app.StepMotorsPanel.Title = 'Step Motors';
+            app.StepMotorsPanel.Layout.Row = 1;
+            app.StepMotorsPanel.Layout.Column = 1;
+
             % Create GridLayoutSMD
-            app.GridLayoutSMD = uigridlayout(app.GridLayoutSM);
+            app.GridLayoutSMD = uigridlayout(app.StepMotorsPanel);
             app.GridLayoutSMD.ColumnWidth = {'1x', '0.5x'};
             app.GridLayoutSMD.RowHeight = {'1x', '1x', '1x', '1x', '1x', '1x'};
-            app.GridLayoutSMD.Layout.Row = 1;
-            app.GridLayoutSMD.Layout.Column = 1;
 
             % Create SMLOCUITable
             app.SMLOCUITable = uitable(app.GridLayoutSMD);
@@ -2101,58 +2186,6 @@ classdef applab_exported < matlab.apps.AppBase
             app.StatusButton.Text = 'Status';
             app.StatusButton.Layout.Row = 1;
             app.StatusButton.Layout.Column = 2;
-
-            % Create SeedingPanel
-            app.SeedingPanel = uipanel(app.GridLayoutSM);
-            app.SeedingPanel.Title = 'Seeding';
-            app.SeedingPanel.Layout.Row = 1;
-            app.SeedingPanel.Layout.Column = 2;
-
-            % Create GridLayoutSMSeedingPanel
-            app.GridLayoutSMSeedingPanel = uigridlayout(app.SeedingPanel);
-            app.GridLayoutSMSeedingPanel.RowHeight = {'1x', '1x', '1x', '1x'};
-
-            % Create SwitchGateButton
-            app.SwitchGateButton = uibutton(app.GridLayoutSMSeedingPanel, 'state');
-            app.SwitchGateButton.ValueChangedFcn = createCallbackFcn(app, @SwitchGateButtonValueChanged, true);
-            app.SwitchGateButton.Text = 'Switch Gate';
-            app.SwitchGateButton.Layout.Row = 4;
-            app.SwitchGateButton.Layout.Column = [1 2];
-
-            % Create InitializeButton
-            app.InitializeButton = uibutton(app.GridLayoutSMSeedingPanel, 'push');
-            app.InitializeButton.ButtonPushedFcn = createCallbackFcn(app, @InitializeButtonPushed, true);
-            app.InitializeButton.Layout.Row = 3;
-            app.InitializeButton.Layout.Column = [1 2];
-            app.InitializeButton.Text = 'Initialize';
-
-            % Create USBDropDownLabel
-            app.USBDropDownLabel = uilabel(app.GridLayoutSMSeedingPanel);
-            app.USBDropDownLabel.HorizontalAlignment = 'right';
-            app.USBDropDownLabel.Layout.Row = 1;
-            app.USBDropDownLabel.Layout.Column = 1;
-            app.USBDropDownLabel.Text = 'USB';
-
-            % Create USBDropDown
-            app.USBDropDown = uidropdown(app.GridLayoutSMSeedingPanel);
-            app.USBDropDown.Items = {};
-            app.USBDropDown.Layout.Row = 1;
-            app.USBDropDown.Layout.Column = 2;
-            app.USBDropDown.Value = {};
-
-            % Create ChannelDropDownLabel
-            app.ChannelDropDownLabel = uilabel(app.GridLayoutSMSeedingPanel);
-            app.ChannelDropDownLabel.HorizontalAlignment = 'right';
-            app.ChannelDropDownLabel.Layout.Row = 2;
-            app.ChannelDropDownLabel.Layout.Column = 1;
-            app.ChannelDropDownLabel.Text = 'Channel';
-
-            % Create ChannelDropDown
-            app.ChannelDropDown = uidropdown(app.GridLayoutSMSeedingPanel);
-            app.ChannelDropDown.Items = {};
-            app.ChannelDropDown.Layout.Row = 2;
-            app.ChannelDropDown.Layout.Column = 2;
-            app.ChannelDropDown.Value = {};
 
             % Create MESScanContextMenu
             app.MESScanContextMenu = uicontextmenu(app.UIFigure);
