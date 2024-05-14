@@ -1,10 +1,29 @@
-function result = opt_obj_fcn(func_norm, value, index, queueEventPool, queuePollableWorkerPool)
+function result = opt_obj_fcn(func_norm, value, index, seeding, queueEventPool, queuePollableWorkerPool)
     arguments
         func_norm function_handle
         value (1,:) double
         index (1,:) double
+        seeding struct
         queueEventPool struct
         queuePollableWorkerPool struct
+    end
+
+    if seeding.auto
+        send(queueEventPool.seedingWatcher, true);
+        send(queueEventPool.logger, 'OPT: check seeding counter');
+        [packet, state] = poll(queuePollableWorkerPool.seedingWatcher.Value, 0.5);
+        if state
+            if packet.state
+                send(queueEventPool.logger, 'OPT: start flow seeding, optimization is paused');
+                send(queueEventPool.seedingHandle, 1);
+                pause(packet.duration);
+                send(queueEventPool.seedingHandle, 0);
+                pause(packet.delay);
+                send(queueEventPool.logger, 'OPT: finish flow seeding, optimization is continued');
+            end
+        else
+            send(queueEventPool.logger, 'OPT: seeding parameter receiving timeout is expired, flow seeding is omitted');
+        end
     end
 
     tStart = tic;

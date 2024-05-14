@@ -25,9 +25,10 @@ function server = piv_tcp_receiver(kwargs)
                 if (size(src.UserData.stack, 3) >= src.UserData.number)
                     src.UserData.toc = toc(src.UserData.tic); src.UserData.tic = tic;
                     src.UserData.data = src.UserData.stack;
+                    src.UserData.counter = src.UserData.counter + 1;
 
                     % send accumulated data to main worker that will call a function handler to process data in background worker
-                    send(kwargs.queueEventAccumulate, struct(data = src.UserData.data, id = src.UserData.id));
+                    send(kwargs.queueEventAccumulate, struct(data = src.UserData.data, id = src.UserData.id, counter = src.UserData.counter));
                     
                     % reset accumulated data
                     src.UserData.stack = [];
@@ -45,7 +46,7 @@ function server = piv_tcp_receiver(kwargs)
     server = tcpserver(kwargs.address, kwargs.port, ConnectionChangedFcn = @callback);
 
     % set custom parameters
-    server.UserData = struct(data = [], stack = [], number = 5, tic = tic, toc = [], id = 0);
+    server.UserData = struct(data = [], stack = [], number = 5, tic = tic, toc = [], id = 0, counter = 1);
 
     send(kwargs.queueEventLogger, strcat(kwargs.tag, ": start the TCP server ", server.ServerAddress, ":", num2str(server.ServerPort))); 
 end
