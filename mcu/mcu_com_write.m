@@ -9,7 +9,10 @@ function mcu_com_write(kwargs)
         kwargs.log parallel.pool.DataQueue = parallel.pool.DataQueue % to call event handler that logs messages
     end
 
-    param.(kwargs.command).value = {kwargs.value}; param.(kwargs.command).index = {kwargs.channel};
+    if isscalar(kwargs.value); kwargs.value = {kwargs.value}; end
+    if isscalar(kwargs.channel); kwargs.channel = {kwargs.channel}; end
+
+    param.(kwargs.command).value = kwargs.value; param.(kwargs.command).index = kwargs.channel;
     packet = jsonencode(param);
     if ~isempty(kwargs.serial)
         writeline(kwargs.serial, packet)

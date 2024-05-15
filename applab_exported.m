@@ -74,7 +74,8 @@ classdef applab_exported < matlab.apps.AppBase
         GridLayoutSM                  matlab.ui.container.GridLayout
         StepMotorsPanel               matlab.ui.container.Panel
         GridLayoutSMD                 matlab.ui.container.GridLayout
-        StatusButton                  matlab.ui.control.StateButton
+        SMInitializeButton            matlab.ui.control.StateButton
+        SMStatusButton                matlab.ui.control.StateButton
         SMHomeButton                  matlab.ui.control.StateButton
         SMZeroButton                  matlab.ui.control.StateButton
         SMShiftButton                 matlab.ui.control.StateButton
@@ -113,7 +114,7 @@ classdef applab_exported < matlab.apps.AppBase
         % queue data pool instances
         queueEventPoolLabel = {'disp', 'logger', 'pivAccumulate', 'pivPreview', 'pivProcessed', 'pivDisplay', 'pivResetCounter', ...
             'optPreview', 'optComplete', 'optTerminate', 'mcuHttpPost', 'mesComplete', 'mesPreview', 'mesStore', 'mesTerminate', ...
-            'mesTerminate', 'mesMcuUdpPost', 'seedingWatcher', 'seedingHandle'}
+            'mesTerminate', 'mesMcuUdpPost', 'seedingWatcher', 'seedingHandle', 'seedingTimerHandle', 'sdMove', 'mcuTrigger', 'mcuCOMWrite'}
         queueEventPool = struct();
 
         queuePollablePoolLabel = {'pivProcessed', 'mcuHttpPost', 'seedingWatcher'}
@@ -198,9 +199,13 @@ classdef applab_exported < matlab.apps.AppBase
 
         mes_tab_param = struct(port = 5050, ... % port of TCP server transmitter
             index = [0, 1, 2, 3], ... % voltage channel index
-            voltage = [0, 1.8, 2.2, 2.6], ... % voltage vector
-            mode = categorical({'generator'}, {'generator'; 'manual'}), ... % build voltage grid method
-            store = categorical({'davis'}, {'davis'; 'matlab'})); % measurement method: `davis` - PIV data stored in DaVis, `matlab` - in application memory 
+            voltage = [], ... % voltage vector
+            position = [0, 10, 20, 50], ... % step motors position vector
+            amplitude = [0, 1.8, 2.2, 2.6], ...
+            seeding = true, ...
+            triggerpin = 5, ...
+            grid = categorical({'generator'}, {'generator'; 'manual'}), ... % method to create scanning table
+            mode = categorical({'extsync'}, {'matlab'; 'extsync'})); % measurement method: `davis` - PIV data stored in DaVis, `matlab` - in application memory, `extsync` - master - matlab, slave - davis; 
         mes_tab_param_def;
         mes_tab_scan = [];
         mes_tab_matlab_input = [];
@@ -212,12 +217,14 @@ classdef applab_exported < matlab.apps.AppBase
         mcu = [];
         sd_counter = 1;
         sd_tab_param = struct(port = categorical({'COM8'}, serialportlist()), ...
-            channel = 4, ...
+            channel = 4, ... % channel of TTL
             period = 4, ... % period in iteration to open seeding gate
             duration = 4, ... % seeding duration in seconds
             delay = 2); % delay after closing gate in seconds
         sd_tab_param_def = [];
         mcu_switch_seed_gate = [];
+        mcu_trigger_handle = [];
+        mcu_com_write = []
     end
     
     methods (Access = private)
@@ -748,7 +755,6 @@ classdef applab_exported < matlab.apps.AppBase
     
         function mes_scan_preview(app, i)
             addStyle(app.MESScanUITable, uistyle('BackgroundColor', '#77AC30'), 'row', i);
-            scroll(app.MESScanUITable, 'bottom');
         end
 
         function mes_scan_complete(app, ~)
@@ -765,7 +771,10 @@ classdef applab_exported < matlab.apps.AppBase
 
         function mes_scan_terminate(app, ~)
             try
-               switch app.mes_tab_param.store
+               switch app.mes_tab_param.mode
+                   case 'extsync'
+                        delete(app.server_mes);
+                        app.log('MES: TCP server is terminated, stop scanning');
                     case 'davis'
                         delete(app.server_mes);
                         app.log('MES: TCP server is terminated, stop scanning');
@@ -780,6 +789,8 @@ classdef applab_exported < matlab.apps.AppBase
             app.MESStopButton.Value = false;
             app.MESStartButton.Value = false;
             app.MESStartButton.Enable = 'on';
+            app.mcu_switch_seed_gate(0);
+            app.mcu_trigger_handle(0);
         end
 
         function mes_init_tab_param(app)
@@ -805,13 +816,42 @@ classdef applab_exported < matlab.apps.AppBase
                [notfound, warnings] = loadlibrary(fullfile(folder, 'libs', 'ximc', 'libximc.dll'), @ximcm);
             end
 
-            app.sm_init_tab_loc();
             app.sm_init_device();
-            app.ximc_init();
+            app.sm_init_tab_loc();
+
+            afterEach(app.queueEventPool.sdMove, @app.sm_move_pos);
+        end
+
+        function sm_move_pos(app, position)
+            flag = true;
+            for i = 1:size(app.sm_device, 2)
+                ximc_move(app.sm_device{i}.name, position(i));
+            end
+            result = []; response = [];
+            while flag
+                for i = 1:size(app.sm_device, 2)
+                    [result(i), app.sm_device{i}.state] = ximc_get_state(app.sm_device{i}.name);
+                    response(i) = app.sm_device{i}.state.CurPosition;
+                    if prod(~logical(result)) == 1
+                        if prod(position == response)
+                            flag = false;
+                        end
+                    end
+                end
+            end
         end
 
         function sm_init_device(app)
-            % TODO
+            probe_flags = 5; enum_hints = 'addr=192.168.1.1,172.16.2.3';
+            sm_device_name = ximc_enumerate_devices_wrap(probe_flags, enum_hints);  
+            if (size(sm_device_name, 2) == 0)
+                app.log('SM: devices are not found');
+                return;
+            end
+            app.log('SM: devices are initialized');
+            for i = 1:size(sm_device_name, 2)
+                app.sm_device{i}.name = sm_device_name{i};
+            end
         end
 
         function sm_init_tab_loc(app)
@@ -819,6 +859,13 @@ classdef applab_exported < matlab.apps.AppBase
             app.SMLOCUITable.ColumnName = app.sm_tab_loc.colname;
             app.SMLOCUITable.Data = app.sm_tab_loc.data;
             app.SMLOCUITable.ColumnEditable = true(1, size(app.sm_tab_loc.data, 2));
+
+            for i = 1:numel(app.sm_device)
+                [result, app.sm_device{i}.state] = ximc_get_state(app.sm_device{i}.name);
+                if (result == 0)
+                    app.SMLOCUITable.Data(1, i) = app.sm_device{i}.state.CurPosition;
+                end
+            end
         end
 
         function sm_disp_curpos(app)
@@ -832,24 +879,6 @@ classdef applab_exported < matlab.apps.AppBase
                 end
             end
         
-        end
-
-        function ximc_init(app)
-            probe_flags = 5; enum_hints = 'addr=192.168.1.1,172.16.2.3';
-            sm_device_name = ximc_enumerate_devices_wrap(probe_flags, enum_hints);  
-            if (size(sm_device_name, 2) == 0)
-                app.log('SM: devices are not found');
-                return;
-            end
-            app.log('SM: devices are initialized');
-
-            for i = 1:size(sm_device_name, 2)
-                app.sm_device{i}.name = sm_device_name{i};
-                [result, app.sm_device{i}.state] = ximc_get_state(app.sm_device{i}.name);
-                if (result == 0)
-                    app.SMLOCUITable.Data(1, i) = app.sm_device{i}.state.CurPosition;
-                end
-            end
         end
 
         function sm_move_button(app)
@@ -879,6 +908,9 @@ classdef applab_exported < matlab.apps.AppBase
 
             afterEach(app.queueEventPool.seedingWatcher, @app.sd_seeding_counter);
             afterEach(app.queueEventPool.seedingHandle, @app.mcu_switch_seed_gate);
+            afterEach(app.queueEventPool.seedingTimerHandle, @app.mcu_switch_seed_gate_timer);
+            afterEach(app.queueEventPool.mcuTrigger, @app.mcu_trigger_handle);
+            afterEach(app.queueEventPool.mcuCOMWrite, @(arg) app.mcu_com_write(arg{:}));
         end
 
         function sm_mcu_init(app)
@@ -886,7 +918,11 @@ classdef applab_exported < matlab.apps.AppBase
             try
                 app.mcu = serialport(char(app.sd_tab_param.port), 9600, "Timeout", 5);
                 configureTerminator(app.mcu, "CR")
+                app.mcu_com_write = @(value, channel, command) mcu_com_write(value = value, channel = channel, command = command, ...
+                    serial = app.mcu, log = app.queueEventPool.logger);
                 app.mcu_switch_seed_gate = @(value) mcu_com_write(value = value, channel = app.sd_tab_param.channel, ...
+                    serial = app.mcu, command = 'chdigout', log = app.queueEventPool.logger);
+                app.mcu_trigger_handle = @(value) mcu_com_write(value = value, channel = app.mes_tab_param.triggerpin, ...
                     serial = app.mcu, command = 'chdigout', log = app.queueEventPool.logger);
                 app.log(strcat("SD: serialport connected to ",char(app.sd_tab_param.port)));
             catch
@@ -902,6 +938,15 @@ classdef applab_exported < matlab.apps.AppBase
                     send(app.queuePollableClientPool.seedingWatcher, ...
                         struct(duration = app.sd_tab_param.duration, delay = app.sd_tab_param.delay, state = true));
                 end
+            end
+        end
+
+        function mcu_switch_seed_gate_timer(app, state)
+            if state
+                app.mcu_switch_seed_gate(1);
+                pause(app.sd_tab_param.duration);
+                app.mcu_switch_seed_gate(0);
+                pause(app.sd_tab_param.delay);
             end
         end
     end
@@ -1186,44 +1231,51 @@ classdef applab_exported < matlab.apps.AppBase
             app.MESStartButton.Enable = 'off';
             app.dbd_set_val('dac', zeros(1, 16), 0:15);
             app.dbd_set_val('fm', app.dbd_tab_param.frequency_value, app.dbd_tab_param.frequency_index);
-            voltage_grid = [];
-            switch char(app.mes_tab_param.mode)
+            tab_scan = [];
+            switch char(app.mes_tab_param.grid)
                 case 'generator'
                     addStyle(app.MESScanUITable, uistyle('BackgroundColor', 'White'));
-                    voltage_grid = mes_scan_tab_gen(app.mes_tab_param, queueEventLogger = app.queueEventPool.logger);
-                    app.MESScanUITable.Data = voltage_grid';
+                    [tab_scan, mask] = mes_scan_tab_gen(voltage = app.mes_tab_param.voltage, channel = app.mes_tab_param.index, ...
+                        position = app.mes_tab_param.position, amplitude = app.mes_tab_param.amplitude, ...
+                        period = app.sd_tab_param.period, ...
+                        queueEventLogger = app.queueEventPool.logger);
+                    app.MESScanUITable.Data = tab_scan;
                 case 'manual'
                     addStyle(app.MESScanUITable, uistyle('BackgroundColor', 'White'));
                     if isa(app.MESScanUITable.Data, 'table')
-                        voltage_grid = table2array(app.MESScanUITable.Data)';
+                        tab_scan = table2array(app.MESScanUITable.Data)';
                     end
                     if isa(app.MESScanUITable.Data, 'double')
-                        voltage_grid = app.MESScanUITable.Data';
+                        tab_scan = app.MESScanUITable.Data';
                     end
             end
-            app.mes_tab_scan = voltage_grid;
-            switch app.mes_tab_param.store
-                case 'davis'
-                   app.server_mes = mes_tcp_eventer(port = app.mes_tab_param.port, ...
-                        queueEventPost = app.queueEventPool.mesMcuUdpPost, value = voltage_grid, queueEventPreview = app.queueEventPool.mesPreview, ...
-                            queueEventTerminate = app.queueEventPool.mesTerminate, queueEventLogger = app.queueEventPool.logger);
+            app.mes_tab_scan = tab_scan;
+            switch app.mes_tab_param.mode
                 case 'matlab'
-                    if ~isempty(voltage_grid)
+                    if ~isempty(tab_scan)
                         app.opt_data_openloop.index = app.mes_tab_param.index;
                         app.opt_data_openloop.x0 = app.opt_data_openloop_def.x0(1) * ones(1, numel(app.opt_data_openloop.index));
                         app.opt_data_openloop.xmin = app.opt_data_openloop_def.xmin(1) * ones(1, numel(app.opt_data_openloop.index));
                         app.opt_data_openloop.xmax = app.opt_data_openloop_def.xmax(1) * ones(1, numel(app.opt_data_openloop.index));
                         app.opt_data_openloop.voltage = app.mes_tab_param.voltage;
-                        app.opt_data_openloop.input = voltage_grid;
+                        app.opt_data_openloop.input = tab_scan;
                         app.opt_data_openloop.tab_res = [];
                         app.opt_data_openloop.output = [];
                         app.mes_tab_matlab_output = [];
                         app.opt_data_openloop.vtcfm1d = [];
                         app.opt_data_openloop
-                        app.poolfun_mes = parfeval(app.poolobj, @mes_scan, 0, voltage_grid, 0:15, app.queueEventPool, app.queuePollableWorkerPool);
+                        app.poolfun_mes = parfeval(app.poolobj, @mes_scan, 0, tab_scan, 0:15, app.queueEventPool, app.queuePollableWorkerPool);
                     else
                         app.mes_scan_complete();
                     end
+                case 'extsync'
+                   app.server_mes = mes_tcp_eventer(port = app.mes_tab_param.port, ...
+                        queueEventPost = app.queueEventPool.mesMcuUdpPost, scan = tab_scan, mask = mask, ...
+                        queueEventSeeding = app.queueEventPool.seedingTimerHandle, ...
+                        queueEventPreview = app.queueEventPool.mesPreview, ...
+                        queueEventMove = app.queueEventPool.sdMove, ...
+                        queueEventTrigger = app.queueEventPool.mcuTrigger, ...
+                        queueEventTerminate = app.queueEventPool.mesTerminate, queueEventLogger = app.queueEventPool.logger);
             end
         end
 
@@ -1512,25 +1564,23 @@ classdef applab_exported < matlab.apps.AppBase
             app.SMHomeButton.Value = false;
         end
 
-        % Value changed function: StatusButton
-        function StatusButtonValueChanged(app, event)
+        % Value changed function: SMStatusButton
+        function SMStatusButtonValueChanged(app, event)
             app.sm_status_button();
-            app.StatusButton.Value = false;
+            app.SMStatusButton.Value = false;
         end
 
         % Cell edit callback: MESSettingsUITable
         function MESSettingsUITableCellEdit(app, event)
+            app.update_tab_param('mes_tab_param', 'MESSettingsUITable', event.Indices(1));
+            
             index = event.Indices(1);
-            label = string(app.MESSettingsUITable.Data.labels(index));
-            value = app.MESSettingsUITable.Data.values(index); value = value{1};
-            try
-                if isa(value, 'categorical')                
-                    app.mes_tab_param.(label) = char(value);
-                end
-                if isa(value, 'char')
-                    app.mes_tab_param.(label) = jsondecode(value);
-                end
-            catch
+            label = string(app.SeedingParametersUITable.Data.labels(index));
+
+            % redefine MCU method
+            if iscategory(categorical({'triggerpin'}), label)
+                app.mcu_trigger_handle = @(value) mcu_com_write(value = value, channel = app.mes_tab_param.triggerpin, ...
+                    serial = app.mcu, command = 'chdigout', log = app.queueEventPool.logger);
             end
         end
 
@@ -1647,6 +1697,13 @@ classdef applab_exported < matlab.apps.AppBase
                 app.mcu_switch_seed_gate = @(value) mcu_com_write(value = value, channel = app.sd_tab_param.channel, ...
                     serial = app.mcu, command = 'chdigout', log = app.queueEventPool.logger);
             end
+        end
+
+        % Value changed function: SMInitializeButton
+        function SMInitializeButtonValueChanged(app, event)
+            app.sm_init_device();
+            app.sm_init_tab_loc();
+            app.SMInitializeButton.Value = false;
         end
     end
 
@@ -2136,14 +2193,14 @@ classdef applab_exported < matlab.apps.AppBase
             % Create GridLayoutSMD
             app.GridLayoutSMD = uigridlayout(app.StepMotorsPanel);
             app.GridLayoutSMD.ColumnWidth = {'1x', '0.5x'};
-            app.GridLayoutSMD.RowHeight = {'1x', '1x', '1x', '1x', '1x', '1x'};
+            app.GridLayoutSMD.RowHeight = {'1x', '1x', '1x', '1x', '1x', '1x', '1x'};
 
             % Create SMLOCUITable
             app.SMLOCUITable = uitable(app.GridLayoutSMD);
             app.SMLOCUITable.ColumnName = '';
             app.SMLOCUITable.RowName = {};
             app.SMLOCUITable.CellEditCallback = createCallbackFcn(app, @SMLOCUITableCellEdit, true);
-            app.SMLOCUITable.Layout.Row = [1 6];
+            app.SMLOCUITable.Layout.Row = [1 7];
             app.SMLOCUITable.Layout.Column = 1;
 
             % Create SMMoveButton
@@ -2155,6 +2212,7 @@ classdef applab_exported < matlab.apps.AppBase
 
             % Create SMStopButton
             app.SMStopButton = uibutton(app.GridLayoutSMD, 'state');
+            app.SMStopButton.Enable = 'off';
             app.SMStopButton.Text = 'Stop';
             app.SMStopButton.Layout.Row = 6;
             app.SMStopButton.Layout.Column = 2;
@@ -2180,12 +2238,19 @@ classdef applab_exported < matlab.apps.AppBase
             app.SMHomeButton.Layout.Row = 3;
             app.SMHomeButton.Layout.Column = 2;
 
-            % Create StatusButton
-            app.StatusButton = uibutton(app.GridLayoutSMD, 'state');
-            app.StatusButton.ValueChangedFcn = createCallbackFcn(app, @StatusButtonValueChanged, true);
-            app.StatusButton.Text = 'Status';
-            app.StatusButton.Layout.Row = 1;
-            app.StatusButton.Layout.Column = 2;
+            % Create SMStatusButton
+            app.SMStatusButton = uibutton(app.GridLayoutSMD, 'state');
+            app.SMStatusButton.ValueChangedFcn = createCallbackFcn(app, @SMStatusButtonValueChanged, true);
+            app.SMStatusButton.Text = 'Status';
+            app.SMStatusButton.Layout.Row = 1;
+            app.SMStatusButton.Layout.Column = 2;
+
+            % Create SMInitializeButton
+            app.SMInitializeButton = uibutton(app.GridLayoutSMD, 'state');
+            app.SMInitializeButton.ValueChangedFcn = createCallbackFcn(app, @SMInitializeButtonValueChanged, true);
+            app.SMInitializeButton.Text = 'Initialize';
+            app.SMInitializeButton.Layout.Row = 7;
+            app.SMInitializeButton.Layout.Column = 2;
 
             % Create MESScanContextMenu
             app.MESScanContextMenu = uicontextmenu(app.UIFigure);
