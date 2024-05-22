@@ -22,6 +22,6 @@ function data = mcu_http_get(kwargs)
         end
         send(kwargs.log, strcat(kwargs.tag, ": HTTP GET request: ", jsonencode(data)));
     catch
-        send(kwargs.log, strcat(kwargs.tag, ": HTTP GET request is failed"));
+        send(kwargs.log, strcat(kwargs.tag, ": HTTP GET request failed"));
     end
 end

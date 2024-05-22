@@ -33,8 +33,8 @@ function mcu_udp_post(type, value, index, kwargs)
         message = jsonencode(parameters);
         udp_socket = udpport;
         write(udp_socket, message, 'string', kwargs.address, kwargs.port);
-        send(kwargs.log, strcat(kwargs.tag, ": UDP sending packet is ", message));
+        send(kwargs.log, strcat(kwargs.tag, ": UDP sending packet ", message));
     catch
-        send(kwargs.log, strcat(kwargs.tag, ": UDP sending packet is failed"));
+        send(kwargs.log, strcat(kwargs.tag, ": UDP sending packet failed"));
     end
 end
