@@ -44,6 +44,6 @@ function state = mcu_http_post(type, value, index, kwargs)
         state = true;
         send(kwargs.log, strcat(kwargs.tag, ": HTTP POST request: ", message));
     catch
-        send(kwargs.log, strcat(kwargs.tag, ": HTTP POST request is failed"));
+        send(kwargs.log, strcat(kwargs.tag, ": HTTP POST request failed"));
     end
 end

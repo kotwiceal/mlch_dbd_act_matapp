@@ -113,7 +113,7 @@ classdef applab_exported < matlab.apps.AppBase
 
         % queue data pool instances
         queueEventPoolLabel = {'disp', 'logger', 'pivAccumulate', 'pivPreview', 'pivProcessed', 'pivDisplay', 'pivResetCounter', ...
-            'optPreview', 'optComplete', 'optTerminate', 'mcuHttpPost', 'mesComplete', 'mesPreview', 'mesStore', 'mesTerminate', ...
+            'optPreview', 'optComplete', 'optTerminate', 'mcuHttpPost', 'mcuDisable', 'mesComplete', 'mesPreview', 'mesStore', 'mesTerminate', ...
             'mesTerminate', 'mesMcuUdpPost', 'seedingWatcher', 'seedingHandle', 'seedingTimerHandle', 'sdMove', 'mcuTrigger', 'mcuCOMWrite'}
         queueEventPool = struct();
 
@@ -218,9 +218,9 @@ classdef applab_exported < matlab.apps.AppBase
         sd_counter = 1;
         sd_tab_param = struct(port = categorical({'COM8'}, serialportlist()), ...
             channel = 4, ... % channel of TTL
-            period = 4, ... % period in iteration to open seeding gate
-            duration = 4, ... % seeding duration in seconds
-            delay = 2); % delay after closing gate in seconds
+            period = 20, ... % period in iteration to open seeding gate
+            duration = 60, ... % seeding duration in seconds
+            delay = 30); % delay after closing gate in seconds
         sd_tab_param_def = [];
         mcu_switch_seed_gate = [];
         mcu_trigger_handle = [];
@@ -442,6 +442,7 @@ classdef applab_exported < matlab.apps.AppBase
             app.init_tab_param(app.dbd_tab_param, 'DBDParametersTable');
             %% assign callback function
             afterEach(app.queueEventPool.mcuHttpPost, @app.mcu_http_post_par);
+            afterEach(app.queueEventPool.mcuDisable, @app.muc_disable);
         end
 
         function dbd_init_tree(app)
@@ -482,6 +483,14 @@ classdef applab_exported < matlab.apps.AppBase
             if (state)
                 app.dbd_tab_param.voltage_value(data.dac.index + 1) = data.dac.value;
                 app.dbd_display();
+            end
+        end
+
+        function muc_disable(app, state)
+            if state
+                app.mcu_udp_post('dac', 0.5*ones(1,16), 0:15);
+                app.mcu_udp_post('dac', 0*ones(1,16), 0:15);
+                app.dbd_tab_param.voltage_value = zeros(1, 16);
             end
         end
         %% declaration OPT module function
@@ -700,8 +709,7 @@ classdef applab_exported < matlab.apps.AppBase
                         cancel(app.poolfun_opt);
                     end
                     app.log('OPT: terminate optimization');
-                    app.dbd_tab_param.voltage_value = zeros(1, 16);
-                    app.mcu_udp_post('dac', zeros(1, 16), 0:15);
+                    app.muc_disable(true);
                     app.StopButton.Value = false;
                     app.dbd_display();
                     app.OPTCancelButton.Value = false;

@@ -14,6 +14,7 @@ function result = opt_obj_fcn(func_norm, value, index, seeding, queueEventPool, 
         [packet, state] = poll(queuePollableWorkerPool.seedingWatcher.Value, 0.5);
         if state
             if packet.state
+                send(queueEventPool.mcuDisable, true);
                 send(queueEventPool.logger, 'OPT: start flow seeding, optimization is paused');
                 send(queueEventPool.seedingHandle, 1);
                 pause(packet.duration);
