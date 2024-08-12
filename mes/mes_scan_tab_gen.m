@@ -1,11 +1,12 @@
 function [scan, mask] = mes_scan_tab_gen(kwargs)
-arguments
+    arguments
         kwargs.position (1,:) double = []
         kwargs.voltage (:,:) double = []
         kwargs.channel (1,:) double = []
         kwargs.amplitude (1,:) double = []
         kwargs.period (1,:) double = []
-        kwargs.queueEventLogger parallel.pool.DataQueue = parallel.pool.DataQueue % to call event handler that logs messages
+        kwargs.pulldown (1,1) logical = false
+        kwargs.queueEventLogger parallel.pool.DataQueue = parallel.pool.DataQueue % at logs messages
     end
 
     scan = []; mask = [];
@@ -19,7 +20,9 @@ arguments
         kwargs.voltage = unique(kwargs.voltage', 'rows');
     else
         if iscolumn(kwargs.voltage); kwargs.voltage = kwargs.voltage'; end
-        kwargs.voltage = [zeros(1, 16); kwargs.voltage];
+        if kwargs.pulldown
+            kwargs.voltage = [zeros(1, 16); kwargs.voltage];
+        end
     end
 
     if isempty(kwargs.position)

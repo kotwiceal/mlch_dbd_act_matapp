@@ -200,6 +200,7 @@ classdef applab_exported < matlab.apps.AppBase
         mes_tab_param = struct(port = 5050, ... % port of TCP server transmitter
             index = [0, 1, 2, 3], ... % voltage channel index
             voltage = [], ... % voltage vector
+            pulldown = false, ... % reset power
             position = [0, 10, 20, 50], ... % step motors position vector
             amplitude = [0, 1.8, 2.2, 2.6], ...
             seeding = true, ...
@@ -442,7 +443,7 @@ classdef applab_exported < matlab.apps.AppBase
             app.init_tab_param(app.dbd_tab_param, 'DBDParametersTable');
             %% assign callback function
             afterEach(app.queueEventPool.mcuHttpPost, @app.mcu_http_post_par);
-            afterEach(app.queueEventPool.mcuDisable, @app.muc_disable);
+            afterEach(app.queueEventPool.mcuDisable, @app.dbd_power_reset);
         end
 
         function dbd_init_tree(app)
@@ -486,9 +487,10 @@ classdef applab_exported < matlab.apps.AppBase
             end
         end
 
-        function muc_disable(app, state)
+        function dbd_power_reset(app, state)
             if state
                 app.mcu_udp_post('dac', 0.5*ones(1,16), 0:15);
+                pause(0.1);
                 app.mcu_udp_post('dac', 0*ones(1,16), 0:15);
                 app.dbd_tab_param.voltage_value = zeros(1, 16);
             end
@@ -709,7 +711,7 @@ classdef applab_exported < matlab.apps.AppBase
                         cancel(app.poolfun_opt);
                     end
                     app.log('OPT: terminate optimization');
-                    app.muc_disable(true);
+                    app.dbd_power_reset(true);
                     app.StopButton.Value = false;
                     app.dbd_display();
                     app.OPTCancelButton.Value = false;
@@ -790,7 +792,7 @@ classdef applab_exported < matlab.apps.AppBase
                         cancel(app.poolfun_mes)
                         app.log('MES: parallel function is terminated, stop scanning');
                end
-                app.dbd_set_val('dac', zeros(1, 16), 0:15);
+                app.dbd_power_reset();
             catch
                 app.log('MES: button click stop is failed');
             end
@@ -806,9 +808,9 @@ classdef applab_exported < matlab.apps.AppBase
         end
 
         function mes_init_tab_scan(app)
-            app.MESScanUITable.ColumnName = split(num2str(0:15))';
+            app.MESScanUITable.ColumnName = cat(1, {'axis1'; 'axis2'; 'seeding'}, "ch"+split(num2str(0:15)));
             app.MESScanUITable.Data = app.mes_tab_scan;
-            app.MESScanUITable.ColumnEditable = true(1, 16);
+            app.MESScanUITable.ColumnEditable = true(1, numel(app.MESScanUITable.ColumnName));
             addStyle(app.MESScanUITable, uistyle('BackgroundColor', 'White'));
         end
 
@@ -951,6 +953,7 @@ classdef applab_exported < matlab.apps.AppBase
 
         function mcu_switch_seed_gate_timer(app, state)
             if state
+                app.dbd_power_reset(true);
                 app.mcu_switch_seed_gate(1);
                 pause(app.sd_tab_param.duration);
                 app.mcu_switch_seed_gate(0);
@@ -1237,15 +1240,19 @@ classdef applab_exported < matlab.apps.AppBase
         % Value changed function: MESStartButton
         function MESStartButtonValueChanged(app, event)
             app.MESStartButton.Enable = 'off';
+            % reset actuator power
             app.dbd_set_val('dac', zeros(1, 16), 0:15);
             app.dbd_set_val('fm', app.dbd_tab_param.frequency_value, app.dbd_tab_param.frequency_index);
+            % build scan grid
             tab_scan = [];
             switch char(app.mes_tab_param.grid)
                 case 'generator'
                     addStyle(app.MESScanUITable, uistyle('BackgroundColor', 'White'));
+                    app.mes_init_tab_scan();
                     [tab_scan, mask] = mes_scan_tab_gen(voltage = app.mes_tab_param.voltage, channel = app.mes_tab_param.index, ...
                         position = app.mes_tab_param.position, amplitude = app.mes_tab_param.amplitude, ...
                         period = app.sd_tab_param.period, ...
+                        pulldown = app.mes_tab_param.pulldown, ...
                         queueEventLogger = app.queueEventPool.logger);
                     app.MESScanUITable.Data = tab_scan;
                 case 'manual'
@@ -1583,7 +1590,7 @@ classdef applab_exported < matlab.apps.AppBase
             app.update_tab_param('mes_tab_param', 'MESSettingsUITable', event.Indices(1));
             
             index = event.Indices(1);
-            label = string(app.SeedingParametersUITable.Data.labels(index));
+            label = string(app.MESSettingsUITable.Data.labels(index));
 
             % redefine MCU method
             if iscategory(categorical({'triggerpin'}), label)

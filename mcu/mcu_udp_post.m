@@ -2,7 +2,7 @@ function mcu_udp_post(type, value, index, kwargs)
     arguments
         type (1,:) char {mustBeMember(type, {'dac', 'fm'})} % subcommand
         value (1,:) double % voltage or frequency vector
-        index (1,:) double {mustBeInteger, mustBeGreaterThanOrEqual(index, 0), mustBeLessThanOrEqual(index, 15)} % channel vector
+        index (1,:) double {mustBeInteger} % channel vector
         kwargs.address (1,:) char = '192.168.1.1'
         kwargs.port (1,1) double = 8080
         kwargs.tag (1,:) char = 'MCU' % logger tag
