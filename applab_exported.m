@@ -235,10 +235,10 @@ classdef applab_exported < matlab.apps.AppBase
                 switch type
                     case 'dac'
                         app.dbd_tab_param.voltage_value(index + 1) = value;
-                        app.mcu_udp_post('dac', app.dbd_tab_param.voltage_value, index + 1);
+                        app.mcu_udp_post('dac', app.dbd_tab_param.voltage_value, index);
                     case 'fm'
                         app.dbd_tab_param.frequency_value(index + 1) = value;
-                        app.mcu_udp_post('fm', app.dbd_tab_param.frequency_value, index + 1);
+                        app.mcu_udp_post('fm', app.dbd_tab_param.frequency_value, index);
                 end
                 app.dbd_display();
             catch
@@ -1964,7 +1964,7 @@ classdef applab_exported < matlab.apps.AppBase
 
             % Create FrequencySlider
             app.FrequencySlider = uislider(app.GridLayoutDBDFrequencySliderPanel);
-            app.FrequencySlider.Limits = [50 90];
+            app.FrequencySlider.Limits = [10 90];
             app.FrequencySlider.Orientation = 'vertical';
             app.FrequencySlider.ValueChangedFcn = createCallbackFcn(app, @FrequencySliderValueChanged, true);
             app.FrequencySlider.Layout.Row = 1;
