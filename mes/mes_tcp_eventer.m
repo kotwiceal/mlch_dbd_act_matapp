@@ -25,6 +25,11 @@ function server = mes_tcp_eventer(kwargs)
                     send(kwargs.queueEventTrigger, 0);
                     pause(2);
 
+                    % disable actuator
+                    send(kwargs.queueEventPost, 0.5*ones(16,1));
+                    send(kwargs.queueEventPost, zeros(16,1));
+                    pause(0.5);
+
                     % flow seeding
                     send(kwargs.queueEventSeeding, src.UserData.scan(src.UserData.i, 3));
 

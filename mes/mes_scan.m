@@ -11,6 +11,7 @@ function mes_scan(value, index, queueEventPool, queuePollableWorkerPool)
         mes_scan_fcn(value(:, i), index, i, queueEventPool, queuePollableWorkerPool);
     end
     send(queueEventPool.logger, 'MES: completion of scanning');
+    send(queueEventPool.mcuHttpPost, jsonencode(struct(dac = struct(value = 500*ones(1, 16), index = 0:15))));
     send(queueEventPool.mcuHttpPost, jsonencode(struct(dac = struct(value = zeros(1, 16), index = 0:15))));
     send(queue_pool.mesComplete, true);
 end
