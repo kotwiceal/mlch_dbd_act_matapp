@@ -1261,8 +1261,9 @@ classdef applab_exported < matlab.apps.AppBase
                         tab_scan = table2array(app.MESScanUITable.Data)';
                     end
                     if isa(app.MESScanUITable.Data, 'double')
-                        tab_scan = app.MESScanUITable.Data';
+                        tab_scan = app.MESScanUITable.Data;
                     end
+                    mask = [];
             end
             app.mes_tab_scan = tab_scan;
             switch app.mes_tab_param.mode
@@ -1330,7 +1331,7 @@ classdef applab_exported < matlab.apps.AppBase
         % Menu selected function: AddMenu
         function AddMenuSelected(app, event)
             try
-                app.mes_tab_scan = [app.mes_tab_scan; zeros(1, 16)];
+                app.mes_tab_scan = [app.mes_tab_scan; zeros(1, 19)];
                 app.mes_init_tab_scan();
                 app.log('MES: appending scan table row is succeed');
             catch
